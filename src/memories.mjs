@@ -95,6 +95,7 @@ export const photoCatalog=[
     "alt": "עוד רגע משותף עם חברים",
     "position": "50% 55%"
   }
+, {id:'memory-17',src:'./assets/memories/memory-17.jpg',alt:'רגע משותף של למידה ליד השולחן',position:'50% 30%'}
 ];
 export function dailyMemories(day) {
   let seed=2166136261;
@@ -104,7 +105,10 @@ export function dailyMemories(day) {
   return result;
 }
 const captions=['また一緒に。','עוד רגע ביחד','思い出','בשביל השיחות שעוד יהיו','少しずつ。','הדרך שלנו'];
-export function memoryMarkup(photo,index=0) {
+export function memoryMarkup(photo,index=0,priority=false) {
   const angle=[-5,5,-3,4,-4,3][index%6];
-  return '<figure class="pinned-memory memory-style-'+index%3+'" style="--tilt:'+angle+'deg"><span class="memory-pin" aria-hidden="true"></span><img src="'+photo.src+'" alt="'+photo.alt+'" loading="lazy" width="1000" height="1000" style="object-position:'+photo.position+'"><figcaption>'+captions[index%captions.length]+'</figcaption></figure>';
+  return '<figure class="pinned-memory memory-style-'+index%3+'" style="--tilt:'+angle+'deg"><span class="memory-pin" aria-hidden="true"></span><img src="'+photo.src+'" alt="'+photo.alt+'" loading="'+(priority?'eager':'lazy')+'" width="1000" height="1000" style="object-position:'+photo.position+'"><figcaption>'+captions[index%captions.length]+'</figcaption></figure>';
 }
+
+export const primaryPhotoIds=Object.freeze(['memory-17','memory-02']);
+export function primaryMemories(){return primaryPhotoIds.map(id=>photoCatalog.find(p=>p.id===id));}

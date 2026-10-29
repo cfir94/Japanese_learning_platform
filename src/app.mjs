@@ -1,10 +1,10 @@
-import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.7';
-import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.7';
+import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.8';
+import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.8';
 
-import {dailyMemories,memoryMarkup} from './memories.mjs?v=20261029.7';
+import {dailyMemories,memoryMarkup,primaryMemories,primaryPhotoIds} from './memories.mjs?v=20261029.8';
 
-const memoryDeck=dailyMemories(todayISO());
-function fillMemories(){document.querySelectorAll('[data-memory-slot]').forEach(slot=>{const start=Number(slot.dataset.memoryStart??0),count=Number(slot.dataset.memoryCount??1);slot.innerHTML=memoryDeck.slice(start,start+count).map((p,i)=>memoryMarkup(p,start+i)).join('');});}
+const memoryDeck=dailyMemories(todayISO()).filter(p=>!primaryPhotoIds.includes(p.id));
+function fillMemories(){document.querySelectorAll('[data-memory-slot]').forEach(slot=>{const start=Number(slot.dataset.memoryStart??0),count=Number(slot.dataset.memoryCount??1);const chosen=slot.dataset.memorySlot==='hero'?primaryMemories():memoryDeck.slice(start,start+count);slot.innerHTML=chosen.map((p,i)=>memoryMarkup(p,start+i,slot.dataset.memorySlot==='hero')).join('');});}
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const allowedIds=mistakes.map(m=>m.id);
