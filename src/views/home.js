@@ -1,0 +1,198 @@
+// Home: what today, what this week, where in the whole plan. Nothing else.
+
+import * as store from '../lib/store.js';
+import { israelDay, weekday, shortDate } from '../lib/dates.js';
+import { esc, rich, statusBar, legend, countStatuses } from '../lib/ui.js';
+import { WEEKS, PLAN } from '../data/plan.js';
+import { PARTS } from '../data/placement.js';
+import { LESSONS, GRAMMAR } from '../data/grammar.js';
+import { buildBrief, parseSummary } from '../logic/brief.js';
+import {
+  findDay, tasksOfDay, taskState, dayProgress, pace, pointStatuses, marchScope, expectedPoints,
+  placementState, partProgress, countdown,
+} from '../logic/progress.js';
+
+export const live = true;
+
+export function render(root) {
+  const today = israelDay();
+  const events = store.all();
+  const tasks = taskState(events);
+  const statuses = pointStatuses(events);
+
+  root.innerHTML = `<div class="stack">
+    ${syncNotice()}
+    ${placementCard(events)}
+    ${todayCard(today, tasks)}
+    ${weekCard(today, tasks)}
+    ${voiceCard(today, events)}
+    ${pictureCard(today, events, statuses)}
+  </div>`;
+
+  root.querySelectorAll('[data-task]').forEach((input) => {
+    input.addEventListener('change', () => store.add('task', { id: input.dataset.task, done: input.checked }));
+  });
+  root.querySelector('#copy-brief')?.addEventListener('click', async (e) => {
+    const text = buildBrief(today, store.all());
+    try {
+      await navigator.clipboard.writeText(text);
+      e.target.textContent = 'הועתק ✓';
+    } catch {
+      prompt('העתק את התדריך:', text);
+    }
+  });
+  root.querySelector('#paste-summary')?.addEventListener('click', openSummaryDialog);
+}
+
+// ChatGPT voice practice: brief out, summary in (format in docs/chatgpt-project.md).
+function voiceCard(today, events) {
+  const week = WEEKS.find((w) => w.start <= today && today <= w.end);
+  const sessions = store.all('voice').filter((e) => week && e.day >= week.start && e.day <= week.end);
+  const minutes = sessions.reduce((s, e) => s + (e.data.minutes || 0), 0);
+  const last = sessions.at(-1)?.data;
+  return `<section class="card">
+    <h2>שיחה קולית עם ChatGPT</h2>
+    <div class="row between wrap">
+      <p class="lead num" style="margin:0">${sessions.length ? `השבוע: ${sessions.length} שיחות · ${minutes} דקות` : 'השבוע עוד לא היו שיחות.'}</p>
+      <div class="row"><button class="btn" id="copy-brief">העתקת התדריך</button><button class="btn" id="paste-summary">הדבקת סיכום</button></div>
+    </div>
+    ${last?.mistakes?.length ? `<p class="small muted" style="margin:10px 0 0">מהשיחה האחרונה: ${last.mistakes.slice(0, 3).map(rich).join(' · ')}</p>` : ''}
+  </section>`;
+}
+
+function openSummaryDialog() {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'card';
+  dialog.innerHTML = `<form method="dialog" class="stack" style="min-width:min(560px,86vw)">
+    <div class="title">סיכום מ־ChatGPT</div>
+    <p class="lead small">בסוף השיחה ChatGPT כותב בלוק שמתחיל ב־KOTOBA. מעתיקים אותו כמו שהוא ומדביקים כאן.</p>
+    <textarea class="answer" name="text" lang="ja" style="min-height:180px" placeholder="KOTOBA&#10;minutes: 20&#10;…"></textarea>
+    <p class="error" hidden></p>
+    <div class="actions"><button class="btn quiet" value="cancel">ביטול</button><button class="btn primary" value="save">שמירה</button></div>
+  </form>`;
+  document.body.append(dialog);
+  const form = dialog.querySelector('form');
+  form.addEventListener('submit', (event) => {
+    if (event.submitter?.value !== 'save') return;
+    const parsed = parseSummary(form.text.value);
+    if (!parsed) {
+      event.preventDefault();
+      const error = form.querySelector('.error');
+      error.textContent = 'לא מצאתי בלוק KOTOBA עם שורת minutes. כדאי להעתיק את כל הבלוק.';
+      error.hidden = false;
+      return;
+    }
+    store.add('voice', parsed);
+  });
+  dialog.addEventListener('close', () => dialog.remove());
+  dialog.showModal();
+  form.text.focus();
+}
+
+function syncNotice() {
+  if (store.sync.state !== 'no-table') return '';
+  return `<section class="card notice small"><b>המעקב נשמר כרגע רק בדפדפן הזה.</b>
+    <p>כדי שיישמר בענן צריך להריץ פעם אחת את <code>supabase/schema.sql</code> ב־Supabase. ההוראות ב־README.</p></section>`;
+}
+
+function placementCard(events) {
+  const state = placementState(events);
+  const progress = PARTS.map((p) => partProgress(p.id, state));
+  const doneParts = progress.filter((p) => p.done >= p.total).length;
+  if (doneParts === PARTS.length) return '';
+  const started = progress.some((p) => p.done > 0);
+  return `<section class="card">
+    <h2>שלב ראשון</h2>
+    <div class="row between wrap">
+      <div>
+        <div class="title">מבחן מיקום</div>
+        <p class="lead">דקדוק משיעור 8 עד 23, כתיבה ודיבור. לפיו נדע מה כבר יושב ומה לא, ונכייל את התוכנית.</p>
+      </div>
+      <a class="btn accent" href="#/test">${started ? 'להמשיך' : 'להתחיל'}</a>
+    </div>
+    <p class="small muted num" style="margin:10px 0 0">${doneParts} מתוך ${PARTS.length} חלקים הושלמו</p>
+  </section>`;
+}
+
+function todayCard(today, tasks) {
+  const found = findDay(today);
+  if (!found) {
+    const before = today < PLAN.start;
+    return `<section class="card"><h2>היום</h2><div class="title">${before ? 'התוכנית מתחילה ב־29.10' : 'התוכנית עד מרץ הסתיימה'}</div></section>`;
+  }
+  const { week, day } = found;
+  const list = tasksOfDay(week, day);
+  const prog = dayProgress(week, day, tasks);
+  return `<section class="card">
+    <div class="row between">
+      <span class="eyebrow">${rich(weekday(today))} · ${shortDate(today)}</span>
+      <span class="eyebrow num">שבוע ${week.week} מתוך ${WEEKS.length}</span>
+    </div>
+    <div class="today-topic">${rich(day.topic)}</div>
+    <ul class="tasks">
+      ${list.map((t) => `<li><label class="task ${tasks[t.id] ? 'done' : ''}">
+        <input type="checkbox" data-task="${t.id}" ${tasks[t.id] ? 'checked' : ''}>
+        <span class="label">${rich(t.label)}</span><span class="min num">${t.minutes} דק׳</span>
+      </label></li>`).join('')}
+    </ul>
+    <p class="small muted num" style="margin:10px 0 0">${prog.doneMinutes} מתוך ${prog.minutes} דקות</p>
+  </section>`;
+}
+
+function weekCard(today, tasks) {
+  const week = WEEKS.find((w) => w.start <= today && today <= w.end);
+  if (!week) return '';
+  const cells = week.days.map((d) => {
+    const p = dayProgress(week, d, tasks);
+    const cls = [
+      d.date === today ? 'today' : '',
+      p.done === p.total ? 'done' : p.done ? 'partial' : '',
+      d.offset === 1 ? 'meet' : '',
+    ].join(' ');
+    const letter = 'אבגדהוש'[new Date(`${d.date}T12:00:00Z`).getUTCDay()];
+    return `<div class="daycell ${cls}" title="${esc(d.topic)}">${letter}׳<b class="num">${shortDate(d.date).split('.')[0]}</b></div>`;
+  }).join('');
+  return `<section class="card">
+    <h2>השבוע · ${rich(week.anchor)}</h2>
+    <div class="title">${rich(week.title)}</div>
+    <p class="lead">שיחה: ${rich(week.conversation.title)}</p>
+    <p class="expr" lang="ja">${rich(week.conversation.expression)}</p>
+    <p class="small muted" style="margin:0">${rich(week.conversation.target)}</p>
+    <div class="days">${cells}</div>
+    <p class="small muted" style="margin:10px 0 0">מילים: ${rich(week.vocabulary)} · קנג׳י: <span lang="ja">${rich(week.kanji)}</span></p>
+  </section>`;
+}
+
+function pictureCard(today, events, statuses) {
+  const scope = marchScope();
+  const counts = countStatuses(scope, statuses);
+  const known = counts.known ?? 0;
+  const expected = expectedPoints(today);
+  const p = pace(events, today);
+  const hours = (m) => String(Math.round(m / 6) / 10);
+  const left = countdown(today);
+  const paceLine = p.behind > 0
+    ? `${p.behind} ימי תוכנית עברו בלי שסומנו. לא משלימים — ממשיכים מהיום.`
+    : 'בקצב התוכנית.';
+
+  const lessonRows = LESSONS.filter((l) => l.n <= 18).map((l) => {
+    const points = GRAMMAR.filter((g) => g.lesson === l.n);
+    return `<a class="lesson-row" href="#/plan" title="שיעור ${l.n} — ${rich(l.title)}">
+      <span class="n">${l.n}</span>${statusBar(countStatuses(points, statuses), points.length)}
+    </a>`;
+  }).join('');
+
+  return `<section class="card">
+    <h2>התמונה הגדולה · עד מרץ</h2>
+    <div class="title">${left > 0 ? `עוד ${left} ימים עד שהן נוחתות` : 'הן כאן 🙂'}</div>
+    <div class="stats">
+      <div class="stat"><b>${known}<small class="muted" style="font-size:14px">/${scope.length}</small></b><span>נקודות דקדוק שיושבות</span></div>
+      <div class="stat"><b>${p.doneDays}<small class="muted" style="font-size:14px">/${p.totalDays}</small></b><span>ימי תוכנית שהושלמו</span></div>
+      <div class="stat"><b>${hours(p.minutesDone)}<small class="muted" style="font-size:14px">/${Math.round(p.minutesPlanned / 60)}</small></b><span>שעות לימוד</span></div>
+    </div>
+    ${statusBar(counts, scope.length, expected / scope.length)}
+    <p class="small muted" style="margin:8px 0 0">הקו: כמה נקודות הלוח מצפה שיישבו עד היום (${expected}). ${paceLine}</p>
+    <div class="lessons">${lessonRows}</div>
+    ${legend(['known', 'partial', 'gap', 'pending', 'new', 'untested'])}
+  </section>`;
+}

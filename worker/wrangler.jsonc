@@ -1,0 +1,20 @@
+// kotoba-api — Gemini checks for the Japanese learning site.
+// Secret (not here): GEMINI_API_KEY — set by the deploy workflow from the GitHub secret.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kotoba-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "vars": {
+    // "latest" always points at the current Flash model, available on the free tier; it accepts audio.
+    "GEMINI_MODEL": "gemini-flash-latest",
+    "ALLOWED_ORIGINS": "https://cfir94.github.io,http://127.0.0.1:4173,http://localhost:4173",
+    // Only these accounts may use the Gemini quota: SHA-256 of the lowercase email, comma-separated.
+    "ALLOWED_EMAIL_HASHES": "694deac204ad8a8f6ba3ea88fe113004462d64b47e1366c0be48afd0a045cbb1",
+    // Shared Supabase project (same as the moreh-derech site and the אבן דרך game). The anon key is public.
+    "SUPABASE_URL": "https://dendxtbaxiszohjjsdtd.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbmR4dGJheGlzem9oampzZHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2OTMzMTcsImV4cCI6MjEwMjI2OTMxN30.rDYzH-3Pz2-XOYoUgrJW7GfTvdrZ7usqbSdtTZ4my6g"
+  }
+}
