@@ -9,6 +9,9 @@ import { esc, rich, statusBar, legend, countStatuses, ring } from '../lib/ui.js'
 import { checkBlank, aiAvailable, gradeItems, gradeWriting, gradeSpeech } from '../lib/check.js';
 import { PARTS, ITEMS, WRITING, SPEAKING, itemsOfPart } from '../data/placement.js';
 import { LESSONS, GRAMMAR, POINT, catalogForGrading } from '../data/grammar.js';
+import { polaroid } from '../lib/photos.js';
+import { memory, memoriesOfDay } from '../data/memories.js';
+import { israelDay } from '../lib/dates.js';
 import { STATUS, placementState, partProgress, pointStatuses } from '../logic/progress.js';
 
 export let live = false;
@@ -44,10 +47,13 @@ export function render(root, route) {
 function renderOverview(root) {
   const state = placementState(store.all());
   const anyAnswered = state.items.size || state.writing.size || state.speech.size;
+  const nextPart = PARTS.find((p) => { const { done, total } = partProgress(p.id, state); return done < total; });
   root.innerHTML = `<div class="stack">
     <section class="card">
-      <h2>מבחן מיקום</h2>
+      <div class="cheer">${polaroid(memory('memory-03'), 'tilt-s')}<div>
+      <h2><span class="ico">📍</span> מבחן מיקום</h2>
       <div class="title">איפה אני באמת עומד?</div>
+      <p class="lead small" lang="ja" style="color:var(--accent)">がんばって！</p></div></div>
       <p class="lead">המבחן עובר על כל נקודות הדקדוק של Genki משיעור 8 עד 23, ומוסיף כתיבה ודיבור. התוצאה צובעת את התוכנית: מה כבר יושב, מה חלקי ומה עוד לא נלמד.</p>
       <ul class="small" style="margin:12px 0 0;padding-inline-start:18px;color:var(--muted)">
         <li>בלי מילון ובלי מתרגם — אחרת לא נדע את האמת.</li>
@@ -64,9 +70,10 @@ function renderOverview(root) {
           const { done, total } = partProgress(p.id, state);
           const label = done >= total ? 'לצפות' : done ? 'להמשיך' : 'להתחיל';
           const href = done >= total ? '#/results' : `#/test/${p.id}`;
+          const next = p.id === nextPart?.id;
           return `<li>${ring(done, total)}
-            <div class="info"><b>${rich(p.title)}</b><span class="small muted num">${total} ${p.lessons ? 'שאלות' : 'משימות'} · כ־${p.minutes} דקות</span></div>
-            <a class="btn ${done >= total ? '' : 'primary'}" href="${href}">${label}</a></li>`;
+            <div class="info"><b>${rich(p.title)}</b><span class="small muted num">${p.book ? `${p.book} · ` : ''}${total} ${p.lessons ? 'שאלות' : 'משימות'} · כ־${p.minutes} דק׳</span></div>
+            <a class="btn ${next ? 'primary' : ''}" href="${href}">${label}</a></li>`;
         }).join('')}
       </ul>
     </section>
@@ -246,7 +253,8 @@ function renderRunner(root, partId) {
   };
 
   const finish = () => {
-    frame(`<div class="title">החלק הושלם</div><p class="lead" id="grading">בודק…</p><div id="summary"></div>
+    frame(`<div class="cheer">${polaroid(memoriesOfDay(israelDay(), 1)[0], 'tilt-l')}<div><div class="title">החלק הושלם</div>
+      <p class="lead" lang="ja" style="color:var(--accent)">お疲れさまでした！</p><p class="lead" id="grading">בודק…</p></div></div><div id="summary"></div>
       <div class="actions"><a class="btn" href="#/results">כל התוצאות</a><a class="btn primary" href="#/test">${nextPartLabel(partId)}</a></div>`);
     const note = root.querySelector('#grading');
     const summary = () => {

@@ -5,6 +5,7 @@ import { israelDay, shortDate } from '../lib/dates.js';
 import { esc, rich, statusBar, legend, countStatuses } from '../lib/ui.js';
 import { WEEKS, MILESTONES, AFTER_MARCH } from '../data/plan.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
+import { pageBanner, placeById } from '../lib/photos.js';
 import { STATUS, pointStatuses, taskState, dayDone, marchScope } from '../logic/progress.js';
 
 export const live = true;
@@ -16,10 +17,12 @@ export function render(root) {
   const tasks = taskState(events);
   const scope = marchScope();
 
+  const top = placeById('galilee') ?? placeById('jerusalem');
   root.innerHTML = `<div class="stack">
+    ${pageBanner(top, 'התוכנית', rich('Genki 8–18 עד מרץ · 19–23 אחרי'))}
     <section class="card">
-      <h2>התוכנית · גרסה 3</h2>
-      <div class="title">Genki 8–18 עד מרץ, 19–23 אחרי</div>
+      <h2><span class="ico">🗺️</span> התוכנית · גרסה 3</h2>
+      ${top ? '' : `<div class="title">${rich('Genki 8–18 עד מרץ, 19–23 אחרי')}</div>`}
       <p class="lead">כל נקודת דקדוק צבועה לפי מה שידוע עליה. אחרי מבחן המיקום הלוח יכויל: מה שכבר יושב יהפוך לחזרה, והזמן יעבור לפערים.</p>
       <div style="margin-top:14px">${statusBar(countStatuses(scope, statuses), scope.length)}</div>
       ${legend()}

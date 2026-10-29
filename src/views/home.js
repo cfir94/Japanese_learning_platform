@@ -7,6 +7,8 @@ import { WEEKS, PLAN } from '../data/plan.js';
 import { PARTS } from '../data/placement.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
 import { buildBrief, parseSummary } from '../logic/brief.js';
+import { openingPair, memoriesStrip, banner, postcards, openCredits } from '../lib/photos.js';
+import { placeOfWeek } from '../data/places.js';
 import {
   findDay, tasksOfDay, taskState, dayProgress, pace, pointStatuses, marchScope, expectedPoints,
   placementState, partProgress, countdown,
@@ -22,11 +24,14 @@ export function render(root) {
 
   root.innerHTML = `<div class="stack">
     ${syncNotice()}
+    ${hero(today)}
     ${placementCard(events)}
     ${todayCard(today, tasks)}
+    ${memoriesStrip(today)}
     ${weekCard(today, tasks)}
     ${voiceCard(today, events)}
     ${pictureCard(today, events, statuses)}
+    ${journeyCard()}
   </div>`;
 
   root.querySelectorAll('[data-task]').forEach((input) => {
@@ -42,6 +47,35 @@ export function render(root) {
     }
   });
   root.querySelector('#paste-summary')?.addEventListener('click', openSummaryDialog);
+  root.querySelector('#credits')?.addEventListener('click', openCredits);
+}
+
+// The reason for all of this, on top of every visit.
+function hero(today) {
+  const left = countdown(today);
+  return `<section class="hero">
+    ${openingPair()}
+    <div>
+      <p class="who" lang="ja">正美お母さん・美礼ちゃん</p>
+      ${left > 0
+        ? `<div class="countdown num">${left}<small>ימים</small></div>
+           <p class="sub">עד שמאסאמי ומינורי נוחתות בישראל · 11.3</p>
+           <p class="ato" lang="ja">あと${left}日</p>`
+        : `<div class="countdown">ようこそ</div><p class="sub">הן כאן.</p>`}
+    </div>
+  </section>`;
+}
+
+// Where we are going — each place is also a word.
+function journeyCard() {
+  const cards = postcards();
+  if (!cards) return '';
+  return `<section class="card">
+    <h2><span class="ico">✈️</span> המסע · <span dir="ltr">11–18.3</span></h2>
+    <p class="lead small" style="margin-bottom:10px">המקומות והאוכל של הביקור, בשמם היפני.</p>
+    ${cards}
+    <button class="credits-link" id="credits" type="button">קרדיטים לצילומים</button>
+  </section>`;
 }
 
 // ChatGPT voice practice: brief out, summary in (format in docs/chatgpt-project.md).
@@ -51,7 +85,7 @@ function voiceCard(today, events) {
   const minutes = sessions.reduce((s, e) => s + (e.data.minutes || 0), 0);
   const last = sessions.at(-1)?.data;
   return `<section class="card">
-    <h2>שיחה קולית עם ChatGPT</h2>
+    <h2><span class="ico">🎙️</span> שיחה קולית עם ChatGPT</h2>
     <div class="row between wrap">
       <p class="lead num" style="margin:0">${sessions.length ? `השבוע: ${sessions.length} שיחות · ${minutes} דקות` : 'השבוע עוד לא היו שיחות.'}</p>
       <div class="row"><button class="btn" id="copy-brief">העתקת התדריך</button><button class="btn" id="paste-summary">הדבקת סיכום</button></div>
@@ -101,8 +135,8 @@ function placementCard(events) {
   const doneParts = progress.filter((p) => p.done >= p.total).length;
   if (doneParts === PARTS.length) return '';
   const started = progress.some((p) => p.done > 0);
-  return `<section class="card">
-    <h2>שלב ראשון</h2>
+  return `<section class="card notice">
+    <h2><span class="ico">📍</span> שלב ראשון</h2>
     <div class="row between wrap">
       <div>
         <div class="title">מבחן מיקום</div>
@@ -113,6 +147,8 @@ function placementCard(events) {
     <p class="small muted num" style="margin:10px 0 0">${doneParts} מתוך ${PARTS.length} חלקים הושלמו</p>
   </section>`;
 }
+
+const ICONS = { words: '🗂️', kanji: '漢', grammar: '✍️', input: '🎧', speaking: '🗣️', meeting: '☕' };
 
 function todayCard(today, tasks) {
   const found = findDay(today);
@@ -132,10 +168,12 @@ function todayCard(today, tasks) {
     <ul class="tasks">
       ${list.map((t) => `<li><label class="task ${tasks[t.id] ? 'done' : ''}">
         <input type="checkbox" data-task="${t.id}" ${tasks[t.id] ? 'checked' : ''}>
+        <span class="ico" aria-hidden="true">${ICONS[t.kind] ?? ''}</span>
         <span class="label">${rich(t.label)}</span><span class="min num">${t.minutes} דק׳</span>
       </label></li>`).join('')}
     </ul>
-    <p class="small muted num" style="margin:10px 0 0">${prog.doneMinutes} מתוך ${prog.minutes} דקות</p>
+    <div class="dayline" aria-hidden="true"><i style="width:${prog.minutes ? (prog.doneMinutes / prog.minutes) * 100 : 0}%"></i></div>
+    <p class="small muted num" style="margin:8px 0 0">${prog.doneMinutes === prog.minutes ? 'היום הושלם. よくできました！' : `${prog.doneMinutes} מתוך ${prog.minutes} דקות`}</p>
   </section>`;
 }
 
@@ -153,6 +191,7 @@ function weekCard(today, tasks) {
     return `<div class="daycell ${cls}" title="${esc(d.topic)}">${letter}׳<b class="num">${shortDate(d.date).split('.')[0]}</b></div>`;
   }).join('');
   return `<section class="card">
+    ${banner(placeOfWeek(week.week), 'היעד של השבוע')}
     <h2>השבוע · ${rich(week.anchor)}</h2>
     <div class="title">${rich(week.title)}</div>
     <p class="lead">שיחה: ${rich(week.conversation.title)}</p>
@@ -170,21 +209,20 @@ function pictureCard(today, events, statuses) {
   const expected = expectedPoints(today);
   const p = pace(events, today);
   const hours = (m) => String(Math.round(m / 6) / 10);
-  const left = countdown(today);
   const paceLine = p.behind > 0
     ? `${p.behind} ימי תוכנית עברו בלי שסומנו. לא משלימים — ממשיכים מהיום.`
     : 'בקצב התוכנית.';
 
   const lessonRows = LESSONS.filter((l) => l.n <= 18).map((l) => {
     const points = GRAMMAR.filter((g) => g.lesson === l.n);
-    return `<a class="lesson-row" href="#/plan" title="שיעור ${l.n} — ${rich(l.title)}">
+    return `<a class="lesson-row" href="#/plan" title="שיעור ${l.n} — ${esc(l.title)}">
       <span class="n">${l.n}</span>${statusBar(countStatuses(points, statuses), points.length)}
     </a>`;
   }).join('');
 
   return `<section class="card">
-    <h2>התמונה הגדולה · עד מרץ</h2>
-    <div class="title">${left > 0 ? `עוד ${left} ימים עד שהן נוחתות` : 'הן כאן 🙂'}</div>
+    <h2><span class="ico">🧭</span> התמונה הגדולה</h2>
+    <div class="title">איפה אני בתוכנית עד מרץ</div>
     <div class="stats">
       <div class="stat"><b>${known}<small class="muted" style="font-size:14px">/${scope.length}</small></b><span>נקודות דקדוק שיושבות</span></div>
       <div class="stat"><b>${p.doneDays}<small class="muted" style="font-size:14px">/${p.totalDays}</small></b><span>ימי תוכנית שהושלמו</span></div>

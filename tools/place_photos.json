@@ -1,0 +1,19 @@
+[
+  {"id": "jerusalem", "file": "Jerusalem_DomeoftheRock_J65_(cropped).JPG", "alt": "כיפת הסלע וחומות העיר העתיקה בירושלים"},
+  {"id": "dead-sea", "wiki": "en:Dead Sea", "search": "Dead Sea salt shore Ein Bokek", "alt": "חוף ים המלח"},
+  {"id": "timna", "wiki": "en:Timna Valley", "search": "Solomon's Pillars Timna", "alt": "צוקי אבן חול אדומים בפארק תמנע"},
+  {"id": "eilat", "wiki": "en:Coral Beach Nature Reserve", "search": "Eilat coral reef snorkeling", "alt": "צלילה בין אלמוגים ודגים באילת"},
+  {"id": "ramon", "wiki": "en:Makhtesh Ramon", "search": "Makhtesh Ramon crater view", "alt": "מכתש רמון"},
+  {"id": "jaffa", "wiki": "en:Jaffa", "search": "Old Jaffa port view", "alt": "יפו העתיקה מעל הים"},
+  {"id": "tel-aviv", "wiki": "en:Tel Aviv Promenade", "search": "Tel Aviv beach promenade", "alt": "טיילת תל אביב והחוף"},
+  {"id": "haifa", "wiki": "en:Terraces of the Bahá'í Shrine", "search": "Bahai gardens Haifa terraces", "alt": "הגנים הבהאיים בחיפה בלילה"},
+  {"id": "galilee", "wiki": "en:Sea of Galilee", "search": "Sea of Galilee view from hills", "alt": "הכנרת"},
+  {"id": "nazareth", "wiki": "en:Basilica of the Annunciation", "search": "Basilica of the Annunciation Nazareth", "alt": "כנסיית הבשורה בנצרת"},
+  {"id": "habonim", "wiki": "en:Habonim Beach", "search": "Habonim beach nature reserve Israel", "alt": "ספינה חלודה על החוף בחוף הבונים"},
+  {"id": "anemones", "wiki": "en:Anemone coronaria", "search": "Anemone coronaria field Israel", "alt": "כלניות אדומות בשדה"},
+  {"id": "hummus", "wiki": "en:Hummus", "search": "hummus plate", "alt": "צלחת חומוס"},
+  {"id": "falafel", "wiki": "en:Falafel", "search": "falafel pita", "alt": "פלאפל"},
+  {"id": "knafeh", "wiki": "en:Knafeh", "search": "knafeh", "alt": "כנאפה"},
+  {"id": "shakshuka", "wiki": "en:Shakshouka", "search": "shakshuka pan", "alt": "שקשוקה במחבת"},
+  {"id": "malabi", "wiki": "en:Muhallebi", "search": "malabi dessert", "alt": "מלבי"}
+]

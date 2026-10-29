@@ -1,9 +1,11 @@
 import { quickAuth, friendlyError } from '../lib/auth.js';
+import { openingPair } from '../lib/photos.js';
 
 export function render(root, { onDone }) {
   root.innerHTML = `
     <section class="login card">
-      <p class="eyebrow">ことば — יפנית</p>
+      ${openingPair()}
+      <p class="eyebrow">ことば — הדרך ליפנית</p>
       <h1 class="title">כניסה</h1>
       <p class="lead">אותה כניסה כמו באתר מורי הדרך: שם ומייל, בלי סיסמה. המעקב נשמר בחשבון ומסונכרן בין מכשירים.</p>
       <form id="login-form">
