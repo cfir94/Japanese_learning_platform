@@ -1,70 +1,65 @@
-# ことば — הדרך ליפנית
+# ことば — יפנית
 
-A Hebrew-first Japanese learning space, built as a dependency-free static application for GitHub Pages. The initial curriculum supports conversation and guiding visitors in Israel, with a March 2027 goal.
+אתר לימוד אישי ליפנית, מוכוון לביקור של שתי חברות יפניות במרץ 2027 ולהתקדמות בכיוון N4.
+https://cfir94.github.io/Japanese_learning_platform/
 
-## What works now
+שלושה מסכים, ואין בהם יותר:
 
-- Responsive RTL dashboard with correctly isolated LTR Japanese text.
-- Ten learning points derived from opening diagnostic exercises, distinguished as grammar, retrieval/register, vocabulary, or context-dependent observations.
-- Typed recall exercises, casual-past verb practice, and sentence assembly.
-- Separate records for first-attempt production, hints, shown corrections, retries, and assembly. A single correct answer does not establish mastery.
-- Due-date-based review queue and a seven-day activity chart based on actual attempts.
-- Speaking timer and saved speaking/diagnostic drafts; free responses are reviewed in the conversation, not automatically graded.
-- Local browser persistence, validated JSON backup import/export, and a session report to paste into the conversation.
-- Optional Japanese example playback when a Japanese speech-synthesis voice is installed.
+- **היום** — נושא הדקדוק של היום, המשימות והדקות, השבוע (מיומנות השיחה, מילים, קנג׳י), שיחה קולית עם ChatGPT,
+  ו"התמונה הגדולה": כמה נקודות דקדוק כבר יושבות מתוך 60 עד מרץ, איפה הלוח מצפה שתהיה, וכמה ימים ושעות הושלמו.
+- **התוכנית** — 88 נקודות הדקדוק של Genki 8–23, צבועות לפי מצבן, ו־19 השבועות יום אחרי יום.
+- **מבחן מיקום** — דקדוק (שלושה חלקים), כתיבה חופשית ודיבור מוקלט. התוצאות צובעות את התוכנית.
 
-The complete 19-week syllabus and scheduled reminders are intentionally still pending the diagnostic results. The roadmap describes directions, not an approved syllabus or a JLPT/CEFR certification.
+## הקמה — פעם אחת
 
-## Local development
+**1. טבלת המעקב ב־Supabase.** בלי השלב הזה הכול נשמר רק בדפדפן.
+פותחים את ה־SQL Editor של הפרויקט המשותף
+(https://supabase.com/dashboard/project/dendxtbaxiszohjjsdtd/sql/new), מדביקים את `supabase/schema.sql` ולוחצים Run.
 
-Node.js 22 or newer is sufficient; there are no package dependencies.
+**2. בדיקת Gemini (כתיבה, תרגומים ודיבור).** ה־Worker יושב ב־`worker/` ומועלה מ־GitHub Actions. צריך שלושה סודות
+ב־Settings → Secrets and variables → Actions של הריפו:
+
+| סוד | מאיפה |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | https://dash.cloudflare.com/profile/api-tokens → Create Token → התבנית **Edit Cloudflare Workers** |
+| `CLOUDFLARE_ACCOUNT_ID` | בעמוד Workers & Pages ב־Cloudflare, בצד |
+| `GEMINI_API_KEY` | https://aistudio.google.com/apikey — אפשר את אותו מפתח של "דבר עם ההיסטוריה" |
+
+אחר כך: Actions → **Deploy Gemini Worker (kotoba-api)** → Run workflow. השלב האחרון בודק ש־
+`https://kotoba-api.cfir94.workers.dev/health` עונה.
+
+**3. ChatGPT.** ההוראות לפרויקט ולתזכורות: [`docs/chatgpt-project.md`](docs/chatgpt-project.md).
+
+## איך זה בנוי
+
+- HTML, CSS ו־ES modules בלי build ובלי תלויות. GitHub Pages מפרסם את `main` מהשורש.
+- **כניסה** משותפת עם אתר מורי הדרך ומשחק אבן דרך (`src/lib/auth.js`): אותו Supabase ואותו session, ולכן מי שמחובר שם
+  מחובר גם כאן.
+- **המעקב** הוא רשימת אירועים שרק מתווספת (`jp_events`): תשובה, ציון, משימה שסומנה, שיחה קולית. כל ההתקדמות מחושבת
+  ממנה (`src/logic/progress.js`). שני מכשירים לא דורסים זה את זה — הסנכרון הוא איחוד לפי מזהה. הכול נשמר קודם בדפדפן,
+  ועולה לענן כשיש חיבור.
+- **בדיקות Gemini** (`worker/`): מפתח Gemini רק ב־Worker. כל בקשה נושאת את ה־token של Supabase, וה־Worker מקבל רק את
+  החשבון שמופיע ב־`ALLOWED_EMAIL_HASHES`. ההקלטות נשלחות לבדיקה ולא נשמרות.
+
+| קובץ | תפקיד |
+|---|---|
+| `src/data/grammar.js` | 88 נקודות הדקדוק (מזהים קבועים) |
+| `src/data/placement.js` | פריטי המבחן, הכתיבה והדיבור |
+| `src/data/plan.js` | 19 השבועות (גרסה 3), אבני דרך, אחרי מרץ |
+| `src/logic/progress.js` | סטטוסים, קצב, ימים ומשימות — פונקציות טהורות |
+| `src/logic/brief.js` | התדריך ל־ChatGPT וקריאת בלוק הסיכום |
+| `src/lib/store.js` | אירועים, localStorage וסנכרון |
+| `src/views/*` | המסכים |
+
+## פיתוח
 
 ```sh
-npm start
+npm start      # http://127.0.0.1:4173/
 npm test
 npm run check
 ```
 
-Open `http://127.0.0.1:4173/`. Use an HTTP server rather than opening `index.html` as a file: the app uses native JavaScript modules. Google Fonts is optional; system font fallbacks are provided.
+## פרטיות
 
-For UI checks, append `?qa=1` before the hash route. That view uses a separate localStorage key, so automated test answers never enter the learner's normal progress.
-
-## GitHub Pages
-
-In **Settings → Pages**, select **Deploy from a branch → main → / (root)** and save. `index.html`, module imports, styles, and icons use relative URLs so the project works under `/Japanese_learning_platform/`. `.nojekyll` allows direct static publication without Jekyll.
-
-Expected project URL after successful publication:
-
-`https://cfir94.github.io/Japanese_learning_platform/`
-
-## Data boundaries
-
-The repository contains application code and educational seed content. The learner's full private notebook, raw personal answers, friends' names, and detailed itinerary are not committed. Browser attempts and drafts are saved under `kotoba-progress-v1` in localStorage, and are not sent to GitHub or an AI service.
-
-To move between devices, use **נתונים וגיבוי** and export/import JSON. Import merges attempts by ID and preserves existing local drafts when both backups contain the same draft key. Deleting browser data removes local progress unless a backup has been kept.
-
-To update the teaching record, use **העתקת דוח המפגש לצ׳אט** and paste the report into the learning conversation. The assistant can then reconcile it with the private notebook and change exercise content in this repository. The static site cannot automatically read the ChatGPT conversation, and the assistant cannot silently read browser-local progress.
-
-### Tracking policy
-
-`src/engine.mjs` owns progress calculations. The working stability criterion requires at least three independent first-attempt production successes, at least two dates and contexts, and a span of at least seven days since the first qualifying success. A later error reopens the point, keeping previous history. This is a configurable teaching convention, not a research-derived universal threshold.
-
-Guided retries and sentence assembly are valuable practice but do not count as independent production. Diagnostics and speaking drafts are never automatically counted as evaluated successes.
-
-## Source map
-
-- `index.html`: application views and accessible UI landmarks.
-- `assets/styles.css`: design system and mobile layouts.
-- `src/data.mjs`: reviewed learning points, questions, and prompts.
-- `src/engine.mjs`: evidence, scheduling, normalization, backup validation, and reports.
-- `src/app.mjs`: browser interactions and persistence.
-- `tests/engine.test.mjs`: behavioral checks for tracking and recovery.
-- `AGENTS.md`: instructions for continuing this project.
-
-Teaching research is documented in the separate learning notebook; primary resources include [Genki's publisher](https://genki3.japantimes.co.jp/en/intro/index.html), [JF Standard role-play assessment](https://www.jfstandard.jpf.go.jp/roleplay/ja/render.do), and [Irodori](https://www.irodori.jpf.go.jp/en/about.html).
-
-
-## Complete session handoff
-Use **הורדת דוח מפגש MD** after diagnostics or a practice round, or from the footer/data menu. One UTF-8 Markdown file contains every stored draft (with its prompt), every attempt including prior dates and assistance markers, and speaking-time records. Attach it to the conversation for feedback. This is a manual one-file handoff; the app does not synchronize answers automatically. JSON remains the lossless import/export backup.
-
-The pinned-photo design includes 16 optimized personal photographs, publicly published with the user's explicit approval. Photos follow a stable daily shuffle. Original files and the full private learning notebook remain outside this repository.
+הריפו ציבורי. אין בו תשובות, הקלטות, מחברת אישית או פרטי מסלול הטיול. כל אלה נמצאים רק בחשבון (Supabase, עם RLS:
+רק הבעלים קורא וכותב).
