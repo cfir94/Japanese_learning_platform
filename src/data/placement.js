@@ -11,19 +11,22 @@
 export const PARTS = [
   {
     id: 'A',
-    title: 'דקדוק — Genki I, שיעורים 8–12',
+    title: 'דקדוק · שיעורים 8–12',
+    book: 'Genki I',
     lessons: [8, 9, 10, 11, 12],
     minutes: 20,
   },
   {
     id: 'B',
-    title: 'דקדוק — Genki II, שיעורים 13–18',
+    title: 'דקדוק · שיעורים 13–18',
+    book: 'Genki II',
     lessons: [13, 14, 15, 16, 17, 18],
     minutes: 20,
   },
   {
     id: 'C',
-    title: 'דקדוק — Genki II, שיעורים 19–23',
+    title: 'דקדוק · שיעורים 19–23',
+    book: 'Genki II',
     lessons: [19, 20, 21, 22, 23],
     minutes: 15,
   },

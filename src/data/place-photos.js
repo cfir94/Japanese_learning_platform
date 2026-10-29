@@ -24,7 +24,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "timna",
-    "alt": "עמודי שלמה בפארק תמנע",
+    "alt": "צוקי אבן חול אדומים בפארק תמנע",
     "src": "./assets/places/timna.jpg",
     "width": 1280,
     "height": 960,
@@ -35,7 +35,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "eilat",
-    "alt": "שונית האלמוגים באילת",
+    "alt": "צלילה בין אלמוגים ודגים באילת",
     "src": "./assets/places/eilat.jpg",
     "width": 960,
     "height": 642,
@@ -79,7 +79,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "haifa",
-    "alt": "הגנים הבהאיים בחיפה",
+    "alt": "הגנים הבהאיים בחיפה בלילה",
     "src": "./assets/places/haifa.jpg",
     "width": 1280,
     "height": 745,
@@ -112,7 +112,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "habonim",
-    "alt": "חוף הבונים",
+    "alt": "ספינה חלודה על החוף בחוף הבונים",
     "src": "./assets/places/habonim.jpg",
     "width": 1280,
     "height": 853,

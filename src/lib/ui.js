@@ -8,13 +8,18 @@ export function esc(value) {
 
 // Escapes Hebrew text that may contain Japanese and marks each Japanese run, so the browser
 // lays it out left-to-right inside the right-to-left line.
-const JAPANESE_RUN = /[　-ヿ㐀-鿿！-｠〜～][　-ヿ㐀-鿿！-｠〜～\s]*[　-ヿ㐀-鿿！-｠〜～]|[　-ヿ㐀-鿿！-｠〜～]/gu;
+const JAPANESE_RUN = /[　-ヿ㐀-鿿！-｠]+(?:\s+[　-ヿ㐀-鿿！-｠]+)*/gu;
+
+// Number and date ranges stay left-to-right ("8–12", "11–18.3"); otherwise RTL shows "12–8".
+const RANGE = /\d+(?:\.\d+)*\s?[–-]\s?\d+(?:\.\d+)*/g;
 
 export function rich(value) {
-  return esc(value).replace(JAPANESE_RUN, (run) => `<span lang="ja">${run}</span>`);
+  return esc(value)
+    .replace(JAPANESE_RUN, (run) => `<span lang="ja">${run}</span>`)
+    .replace(RANGE, (run) => `<span dir="ltr">${run}</span>`);
 }
 
-const ORDER =['known', 'partial', 'gap', 'pending', 'new', 'untested'];
+const ORDER = ['known', 'partial', 'gap', 'pending', 'new', 'untested'];
 
 // A horizontal bar split by status counts. `marker` (0–1) draws the expected-by-today line.
 export function statusBar(counts, total, marker = null) {
