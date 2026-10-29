@@ -186,5 +186,104 @@ export const PLACE_PHOTOS = [
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Mhallabiyyeh_(Arabic_milk_pudding).jpg"
+  },
+  {
+    "id": "eilat-city",
+    "alt": "מפרץ אילת",
+    "src": "./assets/places/eilat-city.jpg",
+    "width": 1280,
+    "height": 735,
+    "author": "Yigal Dekel",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Eilat_night_hotels_2016.jpg"
+  },
+  {
+    "id": "dead-sea-mud",
+    "alt": "מתמרחים בבוץ בים המלח",
+    "src": "./assets/places/dead-sea-mud.jpg",
+    "width": 960,
+    "height": 1280,
+    "author": "James Emery from Douglasville, United States",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Stefan_covered_w-_Dead_Sea_mud_1509_(509725163).jpg"
+  },
+  {
+    "id": "bedouin-tent",
+    "alt": "אוהל אירוח בדואי",
+    "src": "./assets/places/bedouin-tent.jpg",
+    "width": 736,
+    "height": 1280,
+    "author": "שלמה רודד",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "source": "https://commons.wikimedia.org/wiki/File:147263_worked_in_ramat_negev_bedouin_hospitality_tent_PikiWiki_Israel.jpg"
+  },
+  {
+    "id": "weaving",
+    "alt": "אריגת שטיח על נול",
+    "src": "./assets/places/weaving.jpg",
+    "width": 1280,
+    "height": 758,
+    "author": "Scharf, J. Thomas (John Thomas), 1843-1898,",
+    "license": "No restrictions",
+    "licenseUrl": "https://www.flickr.com/commons/usage/",
+    "source": "https://commons.wikimedia.org/wiki/File:Alexander_Smith_and_Sons_carpet_weaving_mills_in_Yonkers,_New_York.jpg"
+  },
+  {
+    "id": "market",
+    "alt": "דוכנים בשוק מחנה יהודה",
+    "src": "./assets/places/market.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "Emilio García from Parla, Spain",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mahane_Yehuda_(I)_(45298221191).jpg"
+  },
+  {
+    "id": "baklava",
+    "alt": "מגש בקלאווה",
+    "src": "./assets/places/baklava.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "E4024",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Baklava_ve_havu%C3%A7_dilimi.jpg"
+  },
+  {
+    "id": "western-wall",
+    "alt": "הכותל המערבי",
+    "src": "./assets/places/western-wall.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Golasso",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Westernwall2.jpg"
+  },
+  {
+    "id": "masada",
+    "alt": "מצדה ממבט אוויר",
+    "src": "./assets/places/masada.jpg",
+    "width": 962,
+    "height": 1280,
+    "author": "Godot13",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Israel-2013-Aerial_21-Masada.jpg"
+  },
+  {
+    "id": "salt",
+    "alt": "גבישי מלח בים המלח",
+    "src": "./assets/places/salt.jpg",
+    "width": 1280,
+    "height": 850,
+    "author": "Jan Helebrant",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:2010-06-17_14-43-40_Israel_Dead_Sea_JH_(52794253055).jpg"
   }
 ];
