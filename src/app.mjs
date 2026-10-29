@@ -1,5 +1,5 @@
-import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs';
-import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport} from './engine.mjs';
+import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.3';
+import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport} from './engine.mjs?v=20261029.3';
 
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];

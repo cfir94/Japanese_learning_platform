@@ -25,6 +25,7 @@
 - Explain export/import and report sharing in ordinary user language. Never imply cloud sync or automatic AI assessment exists.
 - Run `npm test` and `npm run check` after logic changes. Validate representative interactions and a narrow viewport in the supported browser when available.
 - `.nojekyll` and `index.html` remain in the root publishing directory. Preserve unrelated changes and use a guarded branch update when writing through the GitHub API.
+- When changing browser assets, advance the coordinated version query in `index.html` and the imports in `src/app.mjs`, so a fresh HTML load does not reuse older cached modules.
 
 ## Progress handoff
 

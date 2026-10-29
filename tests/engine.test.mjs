@@ -4,6 +4,9 @@ import {todayISO,addDays,daysBetween,checkAnswer,emptyState,makeAttempt,progress
 import {mistakes,questions} from '../src/data.mjs';
 
 const itemId='JP-001';
+test('each tracked point can be practised in more than one context before it is considered stable',()=>{
+  for(const item of mistakes)assert.ok(new Set(questions.filter(q=>q.itemId===item.id).map(q=>q.context)).size>=2, item.id);
+});
 function attempt(day,context='hear-event',overrides={}){return {...makeAttempt({id:context,itemId,context},'聞いた',{now:new Date(`${day}T12:00:00Z`),correct:true,id:`${day}-${context}`}),...overrides};}
 
 test('learning dates use Israel time and calendar days across the March boundary',()=>{
