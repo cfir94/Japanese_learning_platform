@@ -64,3 +64,40 @@ export function buildReport(state,items,day=todayISO()) {
   lines.push('','נא לעדכן את מחברת הלמידה, לבדוק את ההפקה החופשית ולהתאים את התרגול הבא. טיוטות אינן נחשבות תשובות שנבדקו.');
   return lines.join('\n');
 }
+
+/** Complete portable Markdown handoff; no state mutation or automatic grading of drafts. */
+export function buildMarkdownReport(state,items,options={}) {
+  const day=options.day??todayISO();
+  const exportedAt=options.exportedAt??new Date().toISOString();
+  const prompts=[...(options.diagnosticPrompts??[]),...(options.speakingPrompts??[]).map(p=>({...p,id:'speaking-'+p.id}))];
+  const names=new Map(prompts.map(p=>[p.id,p]));
+  const block=text=>{const value=String(text??'');const runs=value.match(/`+/g)??[];const fence='`'.repeat(Math.max(3,...runs.map(x=>x.length+1)));return fence+'text\n'+value+'\n'+fence;};
+  const stats=sessionStats(state.attempts,day);
+  const lines=['# דוח מפגש — לימודי יפנית','', 'יום לימוד (שעון ישראל): '+day,'נוצר: '+exportedAt,'',options.qaMode?'**דוח בדיקה — אינו ביצוע של כפיר.**':'דוח אישי מהדפדפן; אין סנכרון אוטומטי לשיחה.','',
+    '## תמונת מצב','', 'ניסיונות היום: '+stats.total+'; נכונים: '+stats.correct+'; הפקות עצמאיות ללא רמז: '+stats.independent+'.',
+    'הקובץ כולל את כל התשובות השמורות, את כל ניסיונות התרגול ואת רישומי הדיבור. טיוטות אינן נחשבות תשובות שנבדקו.','',
+    '## תשובות וטיוטות לבדיקה',''];
+  const entries=Object.entries(state.drafts).filter(([,v])=>v.trim());
+  if(!entries.length)lines.push('אין טיוטות שמורות.');
+  for(const [id,value]of entries){
+    const p=names.get(id);
+    lines.push('### '+(p?.title??id),'', 'מזהה משימה: '+id, 'מצב: טיוטה — ממתינה למשוב אנושי.',
+      ...(p?.prompt?['','המשימה: '+p.prompt]:[]),'',block(value),'');
+  }
+  lines.push('## כל ניסיונות התרגול','');
+  if(!state.attempts.length)lines.push('אין ניסיונות שמורים.');
+  for(const a of [...state.attempts].sort((a,b)=>a.at.localeCompare(b.at))){
+    const independent=a.correct&&a.firstTry&&!a.hinted&&!a.revealed&&a.type==='production';
+    lines.push('### '+a.itemId+' · '+a.questionId,'',
+      'מזהה ניסיון: '+a.id,'מועד: '+a.at+'; יום בישראל: '+a.day,
+      'הקשר: '+a.context+'; סוג: '+a.type,
+      'תוצאה: '+(a.correct?'נכון':'טעון תיקון')+'; רמז: '+a.hinted+'; הוצג פתרון: '+a.revealed+'; ניסיון ראשון: '+a.firstTry,
+      'הפקה עצמאית נכונה: '+independent,'',block(a.answer),'');
+  }
+  lines.push('## מצב נקודות המעקב','');
+  for(const item of items){const p=progressFor(item.id,state.attempts,day);if(p.total)lines.push('- '+item.id+' — '+item.title+': '+p.total+' ניסיונות; '+p.independent+' הצלחות עצמאיות מאז הטעות האחרונה; מצב '+p.status+'; חזרה '+p.nextReview+'.');}
+  lines.push('','## רישומי דיבור','', 'רישום זמן אינו מעיד על איכות דיבור או הגייה.');
+  for(const s of state.speakingSessions??[])lines.push('- '+s.day+' | '+s.promptId+' | '+s.seconds+' שניות | מזהה '+s.id);
+  lines.push('','## בקשה למשוב','', 'נא לבדוק את ההפקה החופשית, לתת משוב ולעדכן את מחברת הלמידה בלי לספור שוב מזהי ניסיונות שכבר נקלטו. אין להסיק שליטה מהצגת פתרון או מטיוטה שטרם נבדקה.');
+  return lines.join('\n')+'\n';
+}

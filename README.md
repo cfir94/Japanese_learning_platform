@@ -62,3 +62,9 @@ Guided retries and sentence assembly are valuable practice but do not count as i
 - `AGENTS.md`: instructions for continuing this project.
 
 Teaching research is documented in the separate learning notebook; primary resources include [Genki's publisher](https://genki3.japantimes.co.jp/en/intro/index.html), [JF Standard role-play assessment](https://www.jfstandard.jpf.go.jp/roleplay/ja/render.do), and [Irodori](https://www.irodori.jpf.go.jp/en/about.html).
+
+
+## Complete session handoff
+Use **הורדת דוח מפגש MD** after diagnostics or a practice round, or from the footer/data menu. One UTF-8 Markdown file contains every stored draft (with its prompt), every attempt including prior dates and assistance markers, and speaking-time records. Attach it to the conversation for feedback. This is a manual one-file handoff; the app does not synchronize answers automatically. JSON remains the lossless import/export backup.
+
+The pinned-photo design is prepared locally. Personal photos are not included in this public version pending explicit approval to publish them. Original files and the full private learning notebook remain outside this repository.
