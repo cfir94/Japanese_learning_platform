@@ -222,7 +222,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "weaving",
-    "alt": "אריגה על נול",
+    "alt": "תצוגה של אריגה בדואית על נול קרקע",
     "src": "./assets/places/weaving.jpg",
     "width": 1280,
     "height": 960,
@@ -233,7 +233,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "fishing",
-    "alt": "סירות דייגים בנמל",
+    "alt": "סירות דייגים בנמל יפו",
     "src": "./assets/places/fishing.jpg",
     "width": 1280,
     "height": 882,
@@ -255,7 +255,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "sahlab",
-    "alt": "סחלב חם",
+    "alt": "כוס סחלב עם קינמון",
     "src": "./assets/places/sahlab.jpg",
     "width": 1173,
     "height": 1171,
@@ -277,7 +277,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "druze-pita",
-    "alt": "פיתה דרוזית על סאג׳",
+    "alt": "פיתה דקה נאפית על סאג׳ מעל אש",
     "src": "./assets/places/druze-pita.jpg",
     "width": 1280,
     "height": 960,
@@ -285,17 +285,6 @@ export const PLACE_PHOTOS = [
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "source": "https://commons.wikimedia.org/wiki/File:Yufka_ekmek.jpg"
-  },
-  {
-    "id": "labneh",
-    "alt": "לבנה עם שמן זית",
-    "src": "./assets/places/labneh.jpg",
-    "width": 1280,
-    "height": 1280,
-    "author": "Takeaway",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source": "https://commons.wikimedia.org/wiki/File:Turkish_strained_yogurt.jpg"
   },
   {
     "id": "western-wall",
