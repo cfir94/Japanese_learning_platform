@@ -4,12 +4,14 @@ import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,m
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const allowedIds=mistakes.map(m=>m.id);
+const qaMode=new URLSearchParams(location.search).get('qa')==='1';
+const sessionStorageKey=qaMode?`${STORAGE_KEY}-qa`:STORAGE_KEY;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={open:'לבדיקה',practising:'בתרגול',stable:'התבסס בבדיקות',reopened:'חזר — פותחים שוב'};
 let state=emptyState();let storageAvailable=true;let filter='all';let mode='review';let round=null;let sentenceRound=null;let speakingIndex=0;let diagnosticIndex=0;let timer=null;let remaining=60;let toastTimer;
-try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)state=parseBackup(raw,allowedIds);}catch{storageAvailable=false;$('#storage-warning').hidden=false;}
+try{const raw=localStorage.getItem(sessionStorageKey);if(raw)state=parseBackup(raw,allowedIds);}catch{storageAvailable=false;$('#storage-warning').hidden=false;}
 
-function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));storageAvailable=true;$('#storage-warning').hidden=true;}catch{storageAvailable=false;$('#storage-warning').hidden=false;}}
+function persist(){try{localStorage.setItem(sessionStorageKey,JSON.stringify(state));storageAvailable=true;$('#storage-warning').hidden=true;}catch{storageAvailable=false;$('#storage-warning').hidden=false;}}
 function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').hidden=false;toastTimer=setTimeout(()=>{$('#toast').hidden=true;},5000);}
 function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
 function shuffle(values){const out=[...values];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
@@ -116,5 +118,6 @@ $('#today-label').textContent=new Intl.DateTimeFormat('he-IL',{day:'numeric',mon
 $('#open-data').addEventListener('click',()=>$('#data-dialog').showModal());$$('[data-close]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.close).close()));$('#export-data').addEventListener('click',exportData);$('#export-quick').addEventListener('click',()=>$('#data-dialog').showModal());$('#import-data').addEventListener('change',importData);$('#copy-report').addEventListener('click',copyReport);
 $$('[data-mode]').forEach(button=>button.addEventListener('click',()=>{const target=`#practice/${button.dataset.mode}`;if(location.hash===target){stopTimer();renderPractice();}else location.hash=target;}));
 $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;$$('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});renderTracker();}));$('#tracker-search').addEventListener('input',renderTracker);
-window.addEventListener('hashchange',navigate);window.addEventListener('pagehide',stopTimer);window.addEventListener('storage',event=>{if(event.key!==STORAGE_KEY||!event.newValue)return;try{state=mergeStates(state,parseBackup(event.newValue,allowedIds));renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();}catch{toast('עדכון מחלונית אחרת לא נקרא. הנתונים כאן נשארו כפי שהיו.');}});
+window.addEventListener('hashchange',navigate);window.addEventListener('pagehide',stopTimer);window.addEventListener('storage',event=>{if(event.key!==sessionStorageKey||!event.newValue)return;try{state=mergeStates(state,parseBackup(event.newValue,allowedIds));renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();}catch{toast('עדכון מחלונית אחרת לא נקרא. הנתונים כאן נשארו כפי שהיו.');}});
+if(qaMode)document.querySelector('.phase-pill').textContent='תצוגת בדיקה · נתונים נפרדים';
 navigate();

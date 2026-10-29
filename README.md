@@ -27,6 +27,8 @@ npm run check
 
 Open `http://127.0.0.1:4173/`. Use an HTTP server rather than opening `index.html` as a file: the app uses native JavaScript modules. Google Fonts is optional; system font fallbacks are provided.
 
+For UI checks, append `?qa=1` before the hash route. That view uses a separate localStorage key, so automated test answers never enter the learner's normal progress.
+
 ## GitHub Pages
 
 In **Settings → Pages**, select **Deploy from a branch → main → / (root)** and save. `index.html`, module imports, styles, and icons use relative URLs so the project works under `/Japanese_learning_platform/`. `.nojekyll` allows direct static publication without Jekyll.
