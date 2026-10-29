@@ -1,3 +1,4 @@
+import {emptyPlan,parsePlan,mergePlans,planReport} from './plan-state.mjs?v=20261029.9';
 export const APP_ID = 'kotoba-learning';
 export const SCHEMA = 1;
 export const STORAGE_KEY = 'kotoba-progress-v1';
@@ -6,7 +7,7 @@ export function addDays(day, count) { const d=new Date(day+'T12:00:00Z'); d.setU
 export function daysBetween(from,to) {return Math.round((Date.parse(to+'T12:00:00Z')-Date.parse(from+'T12:00:00Z'))/86400000);}
 export function normalizeAnswer(text) {return String(text).normalize('NFKC').replace(/[\s\u3000。．.!！?？、,，]/gu,'').trim();}
 export function checkAnswer(answer, accepted) {const value=normalizeAnswer(answer);return value.length>0&&accepted.some(x=>normalizeAnswer(x)===value);}
-export function emptyState() {return {app:APP_ID,schema:SCHEMA,attempts:[],drafts:{},speakingSessions:[]};}
+export function emptyState() {return {app:APP_ID,schema:SCHEMA,attempts:[],drafts:{},speakingSessions:[],curriculum:emptyPlan()};}
 function stableEvidence(attempts) {
   const good=attempts.filter(a=>a.correct&&a.firstTry&&!a.hinted&&!a.revealed&&a.type==='production');
   const dates=new Set(good.map(a=>a.day)); const contexts=new Set(good.map(a=>a.context));
@@ -48,12 +49,12 @@ export function parseBackup(raw,allowedIds) {
   if(data.drafts&&typeof data.drafts==='object'&&!Array.isArray(data.drafts))for(const [key,value] of Object.entries(data.drafts)){if(!/^[a-z0-9-]{1,60}$/.test(key)||typeof value!=='string'||value.length>10000)throw new Error('הגיבוי מכיל טיוטה לא תקינה.');drafts[key]=value;}
   const speakingSessions=Array.isArray(data.speakingSessions)?data.speakingSessions:[];
   if(speakingSessions.length>10000||!speakingSessions.every(s=>s&&typeof s.id==='string'&&s.id.length<=150&&validDate(s.day)&&typeof s.promptId==='string'&&s.promptId.length<100&&Number.isInteger(s.seconds)&&s.seconds>=0&&s.seconds<=3600))throw new Error('הגיבוי מכיל רישום דיבור לא תקין.');
-  return {app:APP_ID,schema:SCHEMA,attempts,drafts,speakingSessions:speakingSessions.map(s=>({id:s.id,day:s.day,promptId:s.promptId,seconds:s.seconds}))};
+  return {app:APP_ID,schema:SCHEMA,attempts,drafts,speakingSessions:speakingSessions.map(s=>({id:s.id,day:s.day,promptId:s.promptId,seconds:s.seconds})),curriculum:parsePlan(data.curriculum)};
 }
 export function mergeStates(current,incoming) {
   const attempts=[...new Map([...current.attempts,...incoming.attempts].map(a=>[a.id,a])).values()].toSorted((a,b)=>a.at.localeCompare(b.at));
   const speakingSessions=[...new Map([...current.speakingSessions,...incoming.speakingSessions].map(a=>[a.id,a])).values()];
-  return {...emptyState(),attempts,drafts:{...incoming.drafts,...current.drafts},speakingSessions};
+  return {...emptyState(),attempts,drafts:{...incoming.drafts,...current.drafts},speakingSessions,curriculum:mergePlans(current.curriculum,incoming.curriculum)};
 }
 export function buildReport(state,items,day=todayISO()) {
   const current=state.attempts.filter(a=>a.day===day); const stats=sessionStats(state.attempts,day);
@@ -99,5 +100,5 @@ export function buildMarkdownReport(state,items,options={}) {
   lines.push('','## רישומי דיבור','', 'רישום זמן אינו מעיד על איכות דיבור או הגייה.');
   for(const s of state.speakingSessions??[])lines.push('- '+s.day+' | '+s.promptId+' | '+s.seconds+' שניות | מזהה '+s.id);
   lines.push('','## בקשה למשוב','', 'נא לבדוק את ההפקה החופשית, לתת משוב ולעדכן את מחברת הלמידה בלי לספור שוב מזהי ניסיונות שכבר נקלטו. אין להסיק שליטה מהצגת פתרון או מטיוטה שטרם נבדקה.');
-  return lines.join('\n')+'\n';
+  return lines.join('\n')+'\n'+planReport(state.curriculum);
 }

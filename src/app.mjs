@@ -1,7 +1,8 @@
-import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.8';
-import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.8';
+import {mountPlan} from './plan-view.mjs?v=20261029.9';
+import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.9';
+import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.9';
 
-import {dailyMemories,memoryMarkup,primaryMemories,primaryPhotoIds} from './memories.mjs?v=20261029.8';
+import {dailyMemories,memoryMarkup,primaryMemories,primaryPhotoIds} from './memories.mjs?v=20261029.9';
 
 const memoryDeck=dailyMemories(todayISO()).filter(p=>!primaryPhotoIds.includes(p.id));
 function fillMemories(){document.querySelectorAll('[data-memory-slot]').forEach(slot=>{const start=Number(slot.dataset.memoryStart??0),count=Number(slot.dataset.memoryCount??1);const chosen=slot.dataset.memorySlot==='hero'?primaryMemories():memoryDeck.slice(start,start+count);slot.innerHTML=chosen.map((p,i)=>memoryMarkup(p,start+i,slot.dataset.memorySlot==='hero')).join('');});}
@@ -27,12 +28,14 @@ function renderOverview(){
   $('#activity-chart').innerHTML=days.map((day,i)=>`<div class="chart-col ${counts[i]?'':'empty'}"><strong>${counts[i]||''}</strong><span class="chart-bar" style="height:${counts[i]?Math.max(10,counts[i]/max*62):3}px" aria-label="${safeDate(day)}: ${counts[i]} ניסיונות"></span><span>${new Intl.DateTimeFormat('he-IL',{weekday:'narrow'}).format(new Date(day+'T12:00:00Z'))}</span></div>`).join('');
   const total=counts.reduce((a,b)=>a+b,0);$('#weekly-total').textContent=total?`${total} ניסיונות`:'';$('#activity-caption').textContent=total?'הגרף מציג ניסיונות תרגול, כולל ניסיונות לאחר תיקון.':'כאן יופיעו הצעדים שלך אחרי התרגול הראשון. כל ניסיון נחשב.';
 }
+let planView;
+function renderPlan(){planView=mountPlan($('#plan-content'),{getState:()=>state,onSave:curriculum=>{state.curriculum=curriculum;persist();return storageAvailable;},today:todayISO(),onDownload:downloadReport});}
 function navigate(){
   stopTimer();remaining=60;
   const [rawView,rawMode,focusId]=location.hash.slice(1).split('/');const view=['home','practice','tracker','journey'].includes(rawView)?rawView:'home';
   $$('.view').forEach(el=>{el.hidden=el.id!==`view-${view}`;});$$('[data-nav]').forEach(el=>{el.classList.toggle('active',el.dataset.nav===view);if(el.dataset.nav===view)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
-  $('#view-label').textContent={home:'היום שלי',practice:'חדר התרגול',tracker:'הטעויות שלי',journey:'המסע למרץ'}[view];
-  renderOverview();if(view==='practice'){mode=['review','verbs','sentence','speaking','diagnostic'].includes(rawMode)?rawMode:'review';renderPractice(focusId);}if(view==='tracker')renderTracker();
+  $('#view-label').textContent={home:'היום שלי',practice:'חדר התרגול',tracker:'הטעויות שלי',journey:'התוכנית וההתקדמות שלי'}[view];
+  renderOverview();if(view==='practice'){mode=['review','verbs','sentence','speaking','diagnostic'].includes(rawMode)?rawMode:'review';renderPractice(focusId);}if(view==='tracker')renderTracker();if(view==='journey')renderPlan();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function renderPractice(focusId){
@@ -117,13 +120,13 @@ function downloadReport(){download(buildMarkdownReport(state,mistakes,{diagnosti
 function copyReport(){return copyText(buildReport(state,mistakes));}
 function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function exportData(){download(JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2),`kotoba-progress-${todayISO()}.json`,'application/json;charset=utf-8');toast('הגיבוי הורד. כדאי לשמור אותו גם מחוץ לדפדפן.');}
-async function importData(event){const file=event.target.files?.[0];if(!file)return;try{if(file.size>2_000_000)throw new Error('קובץ הגיבוי גדול מדי.');const incoming=parseBackup(await file.text(),allowedIds);state=mergeStates(state,incoming);persist();renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();if(location.hash.startsWith('#practice'))navigate();toast('הגיבוי מוזג עם ההתקדמות הקיימת.');}catch(error){toast(error.message||'לא ניתן לייבא את הקובץ.');}event.target.value='';}
+async function importData(event){const file=event.target.files?.[0];if(!file)return;try{if(file.size>2_000_000)throw new Error('קובץ הגיבוי גדול מדי.');const incoming=parseBackup(await file.text(),allowedIds);state=mergeStates(state,incoming);persist();renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();if(location.hash.startsWith('#practice'))navigate();if(location.hash.startsWith('#journey'))planView?.refresh();toast('הגיבוי מוזג עם ההתקדמות הקיימת.');}catch(error){toast(error.message||'לא ניתן לייבא את הקובץ.');}event.target.value='';}
 
 $('#today-label').textContent=new Intl.DateTimeFormat('he-IL',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jerusalem'}).format(new Date());
 $('#open-data').addEventListener('click',()=>$('#data-dialog').showModal());$$('[data-close]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.close).close()));$('#export-data').addEventListener('click',exportData);$('#export-quick').addEventListener('click',()=>$('#data-dialog').showModal());$('#import-data').addEventListener('change',importData);$('#copy-report').addEventListener('click',copyReport);$('#download-report').addEventListener('click',downloadReport);$('#session-report-quick').addEventListener('click',downloadReport);
 $$('[data-mode]').forEach(button=>button.addEventListener('click',()=>{const target=`#practice/${button.dataset.mode}`;if(location.hash===target){stopTimer();renderPractice();}else location.hash=target;}));
 $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;$$('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});renderTracker();}));$('#tracker-search').addEventListener('input',renderTracker);
-window.addEventListener('hashchange',navigate);window.addEventListener('pagehide',stopTimer);window.addEventListener('storage',event=>{if(event.key!==sessionStorageKey||!event.newValue)return;try{state=mergeStates(state,parseBackup(event.newValue,allowedIds));renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();}catch{toast('עדכון מחלונית אחרת לא נקרא. הנתונים כאן נשארו כפי שהיו.');}});
+window.addEventListener('hashchange',navigate);window.addEventListener('pagehide',stopTimer);window.addEventListener('storage',event=>{if(event.key!==sessionStorageKey||!event.newValue)return;try{state=mergeStates(state,parseBackup(event.newValue,allowedIds));renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();if(location.hash.startsWith('#journey'))planView?.refresh();}catch{toast('עדכון מחלונית אחרת לא נקרא. הנתונים כאן נשארו כפי שהיו.');}});
 if(qaMode)document.querySelector('.phase-pill').textContent='תצוגת בדיקה · נתונים נפרדים';
 fillMemories();
 navigate();
