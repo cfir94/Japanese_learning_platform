@@ -1,6 +1,10 @@
-import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.6';
-import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.6';
+import {course,mistakes,questions,sentences,speakingPrompts,diagnosticPrompts} from './data.mjs?v=20261029.7';
+import {APP_ID,STORAGE_KEY,todayISO,addDays,daysBetween,emptyState,checkAnswer,makeAttempt,progressFor,reviewQueue,sessionStats,parseBackup,mergeStates,buildReport,buildMarkdownReport} from './engine.mjs?v=20261029.7';
 
+import {dailyMemories,memoryMarkup} from './memories.mjs?v=20261029.7';
+
+const memoryDeck=dailyMemories(todayISO());
+function fillMemories(){document.querySelectorAll('[data-memory-slot]').forEach(slot=>{const start=Number(slot.dataset.memoryStart??0),count=Number(slot.dataset.memoryCount??1);slot.innerHTML=memoryDeck.slice(start,start+count).map((p,i)=>memoryMarkup(p,start+i)).join('');});}
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const allowedIds=mistakes.map(m=>m.id);
@@ -40,7 +44,7 @@ function renderPractice(focusId){
   round={queue,index:0,results:[],tries:0,hinted:false,revealed:false,done:false};renderQuestion();
 }
 function exerciseShell(content,noteTitle='מנסים לפני שמציצים',note='תשובה קצרה ומוגדרת עוזרת להפריד בין זיהוי של צורה לבין שליפה שלה. רמזים ותיקונים זמינים תמיד ונרשמים כעזרה, כדי שנדע מה לבדוק שוב.'){
-  $('#practice-content').innerHTML=`<div class="practice-layout"><section class="panel exercise-card">${content}</section><aside class="panel side-note"><span class="note-icon" lang="ja">一歩</span><h3>${esc(noteTitle)}</h3><p>${esc(note)}</p><p>הפקה חופשית, טבעיות והגייה נבדקות בשיחה. האתר אינו נותן להן ציון אוטומטי.</p></aside></div>`;
+  $('#practice-content').innerHTML=`<div class="practice-layout"><section class="panel exercise-card">${content}</section><aside class="panel side-note"><div class="practice-memory">${memoryMarkup(memoryDeck[6],6)}</div><span class="note-icon" lang="ja">一歩</span><h3>${esc(noteTitle)}</h3><p>${esc(note)}</p><p>הפקה חופשית, טבעיות והגייה נבדקות בשיחה. האתר אינו נותן להן ציון אוטומטי.</p></aside></div>`;
 }
 function renderQuestion(){
   if(round.index>=round.queue.length){renderRoundResults();return;}
@@ -121,4 +125,5 @@ $$('[data-mode]').forEach(button=>button.addEventListener('click',()=>{const tar
 $$('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;$$('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});renderTracker();}));$('#tracker-search').addEventListener('input',renderTracker);
 window.addEventListener('hashchange',navigate);window.addEventListener('pagehide',stopTimer);window.addEventListener('storage',event=>{if(event.key!==sessionStorageKey||!event.newValue)return;try{state=mergeStates(state,parseBackup(event.newValue,allowedIds));renderOverview();if(location.hash.startsWith('#tracker'))renderTracker();}catch{toast('עדכון מחלונית אחרת לא נקרא. הנתונים כאן נשארו כפי שהיו.');}});
 if(qaMode)document.querySelector('.phase-pill').textContent='תצוגת בדיקה · נתונים נפרדים';
+fillMemories();
 navigate();

@@ -67,4 +67,4 @@ Teaching research is documented in the separate learning notebook; primary resou
 ## Complete session handoff
 Use **הורדת דוח מפגש MD** after diagnostics or a practice round, or from the footer/data menu. One UTF-8 Markdown file contains every stored draft (with its prompt), every attempt including prior dates and assistance markers, and speaking-time records. Attach it to the conversation for feedback. This is a manual one-file handoff; the app does not synchronize answers automatically. JSON remains the lossless import/export backup.
 
-The pinned-photo design is prepared locally. Personal photos are not included in this public version pending explicit approval to publish them. Original files and the full private learning notebook remain outside this repository.
+The pinned-photo design includes 16 optimized personal photographs, publicly published with the user's explicit approval. Photos follow a stable daily shuffle. Original files and the full private learning notebook remain outside this repository.

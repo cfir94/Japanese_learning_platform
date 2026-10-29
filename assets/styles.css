@@ -31,3 +31,18 @@ body{background:var(--paper)}.sidebar{background:#ede7dc;border-color:#ded7c9}.b
 @media(prefers-reduced-motion:reduce){.destination-card,.destination-card img{transition:none}.destination-card:hover,.destination-card:hover img{transform:none}}
 
 @media(max-width:760px){.travel-hero{min-height:610px}}@media(max-width:360px){.travel-hero{min-height:610px}}
+
+/* Memories pinned into the learning spaces, stable for the entire day. */
+.pinned-memory{position:relative;display:block;margin:0;background:#fffdf6;border:1px solid #e9e1d6;padding:10px 10px 32px;transform:rotate(var(--tilt,-4deg));box-shadow:3px 12px 23px #172d3a40;color:#3c4d4c;width:100%;break-inside:avoid}
+.pinned-memory img{display:block;object-fit:cover;width:100%;aspect-ratio:1.13;height:auto;background:#e8e1d7}
+.pinned-memory figcaption{position:absolute;bottom:7px;left:10px;right:10px;text-align:center;font-size:12px;font-family:var(--font),'Noto Serif JP',serif;line-height:1.4}
+.memory-pin{position:absolute;top:-8px;left:50%;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9a28a,#a83d30 55%,#713029);box-shadow:0 3px 3px #0006;z-index:2}
+.memory-style-1 .memory-pin{border-radius:0;left:34%;top:-8px;width:34%;height:20px;background:#d5c09abf;box-shadow:none;transform:rotate(-5deg)}
+.memory-style-2 .memory-pin{background:radial-gradient(circle at 35% 30%,#a8c7b7,#376c64 60%,#28514b)}
+.travel-hero .hero-copy{max-width:59%}.memory-collage{position:absolute;left:35px;top:50%;transform:translateY(-42%);width:32%;height:330px;direction:ltr}
+.memory-collage .pinned-memory{position:absolute;top:0;left:0;width:88%}.memory-collage .pinned-memory:nth-child(2){top:120px;left:17%;width:78%;transform:rotate(7deg)}.memory-collage .pinned-memory img{aspect-ratio:1.2}
+.travel-seal{z-index:3;width:77px;height:77px}
+.focus-panel{position:relative}.focus-memory{float:left;width:115px;margin:0 0 20px 12px}.focus-memory .pinned-memory{padding:6px 6px 26px}.focus-memory figcaption{font-size:8px}.focus-memory .memory-pin{width:11px;height:11px}.tracker-memory-strip{display:flex;justify-content:flex-end;margin:0 14px 22px;min-height:0}.tracker-memory-strip>.pinned-memory{width:165px}.journey-memories{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:16px 10px 26px}.practice-memory{width:190px;max-width:80%;margin:0 auto 30px}.side-note{overflow:visible}.practice-memory img{aspect-ratio:1.15}.footer{flex-wrap:wrap}.footer .text-button{white-space:normal}.diagnostic-actions{flex-wrap:wrap}.data-actions+.caption{line-height:1.8}
+@media(max-width:1100px){.memory-collage{width:31%;height:290px;left:22px}.memory-collage .pinned-memory:nth-child(2){top:100px}.travel-hero .hero-copy{max-width:63%}.focus-memory{width:100px}}
+@media(max-width:760px){.travel-hero{flex-direction:column;min-height:0;align-items:stretch;padding-bottom:32px}.travel-hero .hero-copy{max-width:100%;padding-top:24px}.memory-collage{position:relative;top:auto;left:auto;transform:none;width:100%;height:280px;margin-top:32px;direction:ltr}.memory-collage .pinned-memory{width:62%;left:3%;top:0}.memory-collage .pinned-memory:nth-child(2){top:54px;left:40%;width:57%}.memory-collage .pinned-memory img{aspect-ratio:1.25}.travel-seal{width:59px;height:59px}.focus-memory{width:105px}.tracker-memory-strip{justify-content:center;margin-top:22px}.tracker-memory-strip>.pinned-memory{width:160px}.journey-memories{padding:20px 10px;gap:18px}.practice-memory{width:170px;max-width:65%;margin-bottom:28px}.footer .text-button{font-size:11px;padding:8px 0}.diagnostic-actions .button{white-space:normal;max-width:100%}}
+@media(prefers-reduced-motion:reduce){.pinned-memory{transition:none}}
