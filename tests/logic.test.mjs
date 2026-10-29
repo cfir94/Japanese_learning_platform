@@ -116,3 +116,13 @@ test('the brief names today\'s topic and the weekly skill', () => {
   assert.match(brief, /もう一度言ってくれる/);
   assert.match(buildBrief('2026-10-30', []), /מפגש שיחה עם אדם/);
 });
+
+import { sentencesFor } from '../src/data/journey.js';
+import { vocabState } from '../src/logic/progress.js';
+
+test('journey sentences can be found by grammar point, and words can be unmarked', () => {
+  assert.ok(sentencesFor(['g09-1']).length > 0);
+  assert.ok(sentencesFor(['g15-1']).every((s) => s.g.includes('g15-1')));
+  const events = [ev('vocab', { id: 'dead-sea:塩', known: true }), ev('vocab', { id: 'dead-sea:塩', known: false }, '2026-10-29T11:00:00.000Z')];
+  assert.equal(vocabState(events)['dead-sea:塩'], false);
+});

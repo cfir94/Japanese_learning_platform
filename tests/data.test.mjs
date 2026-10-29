@@ -73,3 +73,31 @@ test('every scheduled lesson has a due date inside the plan, in order', () => {
     assert.equal(LESSON_DUE[lesson], last.end, `lesson ${lesson} is due when its last week ends`);
   }
 });
+
+import { CATEGORIES, ENTRIES, wordId } from '../src/data/journey.js';
+import { MEMORIES } from '../src/data/memories.js';
+import { readFileSync } from 'node:fs';
+
+test('journey entries are complete, and every photo and grammar tag exists', () => {
+  const manifest = new Set(JSON.parse(readFileSync(new URL('../tools/place_photos.json', import.meta.url))).map((p) => p.id));
+  const memories = new Set(MEMORIES.map((m) => m.id));
+  const ids = ENTRIES.map((e) => e.id);
+  assert.equal(new Set(ids).size, ids.length, 'unique ids');
+  for (const e of ENTRIES) {
+    assert.ok(CATEGORIES.some((c) => c.id === e.cat), `${e.id} category`);
+    assert.ok(!CATEGORIES.some((c) => c.id === e.id), `${e.id} must not shadow a category route`);
+    assert.ok(e.he && e.ja && e.intro, `${e.id} names and intro`);
+    assert.ok(e.memory ? memories.has(e.memory) : manifest.has(e.photo), `${e.id} photo is in the manifest`);
+    assert.ok(e.words.length >= 6, `${e.id} words`);
+    assert.ok(e.sentences.length >= 4, `${e.id} sentences`);
+    const wids = e.words.map((w) => wordId(e, w));
+    assert.equal(new Set(wids).size, wids.length, `${e.id} unique words`);
+    for (const w of e.words) assert.ok(w.length === 3 && w[0] && w[2], `${e.id} word ${w[0]}`);
+    for (const s of [...e.sentences, e.ask]) {
+      assert.equal(s.length, 4, `${e.id}: ${s[0]}`);
+      assert.ok(s[0] && s[1] && s[2], `${e.id}: ${s[0]}`);
+      assert.doesNotMatch(s[1], /[一-鿿]/, `${e.id}: the reading of "${s[0]}" has no kanji`);
+      for (const g of s[3]) assert.ok(POINT[g], `${e.id}: ${g}`);
+    }
+  }
+});

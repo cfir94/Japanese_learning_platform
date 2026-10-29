@@ -7,7 +7,8 @@ import { WEEKS, PLAN } from '../data/plan.js';
 import { PARTS } from '../data/placement.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
 import { buildBrief, parseSummary } from '../logic/brief.js';
-import { openingPair, memoriesStrip, banner, postcards, openCredits } from '../lib/photos.js';
+import { openingPair, memoriesStrip, banner, postcards } from '../lib/photos.js';
+import { CATEGORIES, sentencesFor } from '../data/journey.js';
 import { placeOfWeek } from '../data/places.js';
 import {
   findDay, tasksOfDay, taskState, dayProgress, pace, pointStatuses, marchScope, expectedPoints,
@@ -47,7 +48,6 @@ export function render(root) {
     }
   });
   root.querySelector('#paste-summary')?.addEventListener('click', openSummaryDialog);
-  root.querySelector('#credits')?.addEventListener('click', openCredits);
 }
 
 // The reason for all of this, on top of every visit.
@@ -66,16 +66,30 @@ function hero(today) {
   </section>`;
 }
 
-// Where we are going — each place is also a word.
+// Where we are going — each place is also a word. The full section lives at #/journey.
 function journeyCard() {
   const cards = postcards();
   if (!cards) return '';
   return `<section class="card">
-    <h2><span class="ico">✈️</span> המסע · <span dir="ltr">11–18.3</span></h2>
-    <p class="lead small" style="margin-bottom:10px">המקומות והאוכל של הביקור, בשמם היפני.</p>
+    <div class="row between"><h2 style="margin:0"><span class="ico">✈️</span> המסע · <span dir="ltr">11–18.3</span></h2>
+      <a class="btn quiet small" href="#/journey">לכל המסע ←</a></div>
+    <div class="tabs" style="margin:10px 0 6px">${CATEGORIES.map((c) => `<a href="#/journey/${c.id}"><span aria-hidden="true">${c.icon}</span> ${esc(c.he)}</a>`).join('')}</div>
     ${cards}
-    <button class="credits-link" id="credits" type="button">קרדיטים לצילומים</button>
   </section>`;
+}
+
+// One sentence from the journey that uses this week's grammar — the trip inside the lesson.
+function journeyExample(week, today) {
+  const points = GRAMMAR.filter((g) => week.lessons.includes(g.lesson)).map((g) => g.id);
+  const pool = sentencesFor(points);
+  if (!pool.length) return '';
+  const n = [...today].reduce((h, c) => h + c.charCodeAt(0), 0) % pool.length;
+  const s = pool[n];
+  return `<a class="example" href="#/journey/${s.entry.id}">
+    <span class="from">דוגמה מהמסע · ${esc(s.entry.he)}</span>
+    <p class="s-ja" lang="ja">${esc(s.ja)}</p>
+    <p class="s-he">${rich(s.he)}</p>
+  </a>`;
 }
 
 // ChatGPT voice practice: brief out, summary in (format in docs/chatgpt-project.md).
@@ -165,6 +179,7 @@ function todayCard(today, tasks) {
       <span class="eyebrow num">שבוע ${week.week} מתוך ${WEEKS.length}</span>
     </div>
     <div class="today-topic">${rich(day.topic)}</div>
+    ${journeyExample(week, today)}
     <ul class="tasks">
       ${list.map((t) => `<li><label class="task ${tasks[t.id] ? 'done' : ''}">
         <input type="checkbox" data-task="${t.id}" ${tasks[t.id] ? 'checked' : ''}>

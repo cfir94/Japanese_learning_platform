@@ -5,11 +5,12 @@ import * as store from './lib/store.js';
 import * as home from './views/home.js';
 import * as plan from './views/plan.js';
 import * as test from './views/test.js';
+import * as journey from './views/journey.js';
 import * as login from './views/login.js';
 
 const root = document.getElementById('app');
 const syncButton = document.getElementById('sync');
-const VIEWS = { '': home, plan, test, results: test };
+const VIEWS = { '': home, plan, journey, test, results: test };
 
 let cleanup = null;
 let current = null;
