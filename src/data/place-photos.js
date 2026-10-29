@@ -288,7 +288,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "labneh",
-    "alt": "לבנה עם שמן זית",
+    "alt": "לבנה ביתית על צלחת",
     "src": "./assets/places/labneh.jpg",
     "width": 1200,
     "height": 800,
