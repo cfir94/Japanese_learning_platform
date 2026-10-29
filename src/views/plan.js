@@ -5,7 +5,7 @@ import { israelDay, shortDate } from '../lib/dates.js';
 import { esc, rich, statusBar, legend, countStatuses } from '../lib/ui.js';
 import { WEEKS, MILESTONES, AFTER_MARCH } from '../data/plan.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
-import { pageBanner, placeById } from '../lib/photos.js';
+import { pageBanner, entryById } from '../lib/photos.js';
 import { STATUS, pointStatuses, taskState, dayDone, marchScope } from '../logic/progress.js';
 
 export const live = true;
@@ -17,7 +17,7 @@ export function render(root) {
   const tasks = taskState(events);
   const scope = marchScope();
 
-  const top = placeById('galilee') ?? placeById('jerusalem');
+  const top = entryById('galilee') ?? entryById('jerusalem');
   root.innerHTML = `<div class="stack">
     ${pageBanner(top, 'התוכנית', rich('Genki 8–18 עד מרץ · 19–23 אחרי'))}
     <section class="card">

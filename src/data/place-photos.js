@@ -186,5 +186,148 @@ export const PLACE_PHOTOS = [
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Mhallabiyyeh_(Arabic_milk_pudding).jpg"
+  },
+  {
+    "id": "eilat-city",
+    "alt": "מלונות אילת בלילה, משתקפים במים",
+    "src": "./assets/places/eilat-city.jpg",
+    "width": 1280,
+    "height": 735,
+    "author": "Yigal Dekel",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Eilat_night_hotels_2016.jpg"
+  },
+  {
+    "id": "dead-sea-mud",
+    "alt": "מתרחץ מכוסה בבוץ במי ים המלח",
+    "src": "./assets/places/dead-sea-mud.jpg",
+    "width": 960,
+    "height": 1280,
+    "author": "James Emery from Douglasville, United States",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Stefan_covered_w-_Dead_Sea_mud_1509_(509725163).jpg"
+  },
+  {
+    "id": "bedouin-tent",
+    "alt": "מארח מוזג משקה חם מקומקום",
+    "src": "./assets/places/bedouin-tent.jpg",
+    "width": 736,
+    "height": 1280,
+    "author": "שלמה רודד",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "source": "https://commons.wikimedia.org/wiki/File:147263_worked_in_ramat_negev_bedouin_hospitality_tent_PikiWiki_Israel.jpg"
+  },
+  {
+    "id": "weaving",
+    "alt": "תצוגה של אריגה בדואית על נול קרקע",
+    "src": "./assets/places/weaving.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Danny-w",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bedouin_woman_weaving.jpg"
+  },
+  {
+    "id": "fishing",
+    "alt": "סירות דייגים בנמל יפו",
+    "src": "./assets/places/fishing.jpg",
+    "width": 1280,
+    "height": 882,
+    "author": "Noam.armonn",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:OLD_JAFFA_PORT.jpg"
+  },
+  {
+    "id": "market",
+    "alt": "דוכנים בשוק מחנה יהודה",
+    "src": "./assets/places/market.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "Emilio García from Parla, Spain",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mahane_Yehuda_(I)_(45298221191).jpg"
+  },
+  {
+    "id": "sahlab",
+    "alt": "כוס סחלב עם קינמון",
+    "src": "./assets/places/sahlab.jpg",
+    "width": 1173,
+    "height": 1171,
+    "author": "DesignbyNur",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Salep_drink.jpg"
+  },
+  {
+    "id": "baklava",
+    "alt": "מגש בקלאווה",
+    "src": "./assets/places/baklava.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "E4024",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Baklava_ve_havu%C3%A7_dilimi.jpg"
+  },
+  {
+    "id": "druze-pita",
+    "alt": "פיתה דקה נאפית על סאג׳ מעל אש",
+    "src": "./assets/places/druze-pita.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Adem Durdu",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Yufka_ekmek.jpg"
+  },
+  {
+    "id": "labneh",
+    "alt": "לבנה ביתית על צלחת",
+    "src": "./assets/places/labneh.jpg",
+    "width": 1200,
+    "height": 800,
+    "author": "Leslie Seaton from Seattle, WA, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Labneh_(5196911587).jpg"
+  },
+  {
+    "id": "western-wall",
+    "alt": "הכותל המערבי",
+    "src": "./assets/places/western-wall.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Golasso",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Westernwall2.jpg"
+  },
+  {
+    "id": "masada",
+    "alt": "מצדה ממבט אוויר",
+    "src": "./assets/places/masada.jpg",
+    "width": 962,
+    "height": 1280,
+    "author": "Godot13",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Israel-2013-Aerial_21-Masada.jpg"
+  },
+  {
+    "id": "salt",
+    "alt": "גבישי מלח בים המלח",
+    "src": "./assets/places/salt.jpg",
+    "width": 1280,
+    "height": 850,
+    "author": "Jan Helebrant",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:2010-06-17_14-43-40_Israel_Dead_Sea_JH_(52794253055).jpg"
   }
 ];

@@ -214,3 +214,12 @@ export function weekOf(day) {
 export function countdown(day) {
   return daysBetween(day, PLAN.arrival);
 }
+
+// ── Journey vocabulary ───────────────────────────────────────────────────────
+
+// Words marked as known: the latest 'vocab' event per word wins, so unmarking is kept too.
+export function vocabState(events) {
+  const state = {};
+  for (const e of events) if (e.kind === 'vocab') state[e.data.id] = Boolean(e.data.known);
+  return state;
+}

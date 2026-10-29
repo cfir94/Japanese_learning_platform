@@ -4,6 +4,7 @@
 import { POINT } from '../data/grammar.js';
 import { findDay, weekOf, pointStatuses } from './progress.js';
 import { WEEKS } from '../data/plan.js';
+import { placeOfWeek } from '../data/places.js';
 
 export function buildBrief(today, events) {
   const found = findDay(today);
@@ -20,6 +21,8 @@ export function buildBrief(today, events) {
   if (week) {
     lines.push(`מיומנות השיחה של השבוע: ${week.conversation.title} — ${week.conversation.expression} (יעד: ${week.conversation.target})`);
     lines.push(`מילים: ${week.vocabulary} · קנג׳י: ${week.kanji}`);
+    const place = placeOfWeek(week.week);
+    if (place) lines.push(`יעד השבוע: ${place.he} (${place.ja}) — שאלה לשיחה: ${place.ask[0]}`);
   }
   if (focus.length) lines.push(`לחזק: ${focus.join(' · ')}`);
   lines.push('בסוף השיחה: בלוק KOTOBA לפי ההוראות.');

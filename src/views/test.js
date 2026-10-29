@@ -165,7 +165,7 @@ function renderRunner(root, partId) {
   const frame = (inner) => {
     const pct = Math.round((index / items.length) * 100);
     root.innerHTML = `<section class="card runner">
-      <div class="row between small muted"><a class="btn quiet" href="#/test">← יציאה</a><span class="num">${Math.min(index + 1, items.length)} / ${items.length}</span></div>
+      <div class="row between small muted"><a class="btn quiet" href="#/test">→ יציאה</a><span class="num">${Math.min(index + 1, items.length)} / ${items.length}</span></div>
       <div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div>
       ${inner}
     </section>`;
@@ -292,7 +292,7 @@ function renderWriting(root) {
     const state = placementState(store.all());
     const next = WRITING.find((w) => !state.writing.has(w.id));
     root.innerHTML = `<div class="stack">
-      <div class="row between"><a class="btn quiet" href="#/test">← למבחן</a><span class="small muted num">${state.writing.size} / ${WRITING.length}</span></div>
+      <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a><span class="small muted num">${state.writing.size} / ${WRITING.length}</span></div>
       ${WRITING.map((w, n) => {
         const entry = state.writing.get(w.id);
         if (entry) return `<section class="card"><h2>משימה ${n + 1}</h2><p>${rich(w.he)}</p>${productionResult(entry, 'writing')}</section>`;
@@ -358,7 +358,7 @@ function renderSpeaking(root) {
     const state = placementState(store.all());
     const next = SPEAKING.find((s) => !state.speech.has(s.id));
     root.innerHTML = `<div class="stack">
-      <div class="row between"><a class="btn quiet" href="#/test">← למבחן</a><span class="small muted num">${state.speech.size} / ${SPEAKING.length}</span></div>
+      <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a><span class="small muted num">${state.speech.size} / ${SPEAKING.length}</span></div>
       ${ok ? '' : '<section class="card notice small"><b>הדיבור נבדק על ידי Gemini, והבדיקה עוד לא מחוברת.</b><p>אפשר לעשות את שאר המבחן בינתיים.</p></section>'}
       ${SPEAKING.map((s, n) => {
         const entry = state.speech.get(s.id);
@@ -489,7 +489,7 @@ function renderResults(root) {
   }).join('');
 
   root.innerHTML = `<div class="stack">
-    <div class="row between"><a class="btn quiet" href="#/test">← למבחן</a>
+    <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a>
       ${pending ? `<button class="btn" id="regrade">לבדוק ${pending} תשובות שממתינות</button>` : ''}</div>
     <section class="card"><h2>תוצאות לפי שיעור</h2>${legend(['known', 'partial', 'gap', 'pending', 'new', 'untested'])}${lessons}</section>
     ${state.writing.size ? `<section class="card"><h2>כתיבה</h2>${WRITING.filter((w) => state.writing.has(w.id)).map((w) => `<div class="result-item"><p class="he">${rich(w.he)}</p>${productionResult(state.writing.get(w.id), 'writing')}</div>`).join('')}</section>` : ''}
