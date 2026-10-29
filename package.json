@@ -1,0 +1,11 @@
+{
+  "name": "japanese-learning-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check src/app.mjs && node --check src/engine.mjs && node --check src/data.mjs"
+  }
+}
