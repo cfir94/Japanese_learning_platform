@@ -287,6 +287,17 @@ export const PLACE_PHOTOS = [
     "source": "https://commons.wikimedia.org/wiki/File:Yufka_ekmek.jpg"
   },
   {
+    "id": "labneh",
+    "alt": "לבנה עם שמן זית",
+    "src": "./assets/places/labneh.jpg",
+    "width": 1200,
+    "height": 800,
+    "author": "Leslie Seaton from Seattle, WA, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Labneh_(5196911587).jpg"
+  },
+  {
     "id": "western-wall",
     "alt": "הכותל המערבי",
     "src": "./assets/places/western-wall.jpg",
