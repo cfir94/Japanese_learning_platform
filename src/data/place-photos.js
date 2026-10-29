@@ -189,7 +189,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "eilat-city",
-    "alt": "מפרץ אילת",
+    "alt": "מלונות אילת בלילה, משתקפים במים",
     "src": "./assets/places/eilat-city.jpg",
     "width": 1280,
     "height": 735,
@@ -200,7 +200,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "dead-sea-mud",
-    "alt": "מתמרחים בבוץ בים המלח",
+    "alt": "מתרחץ מכוסה בבוץ במי ים המלח",
     "src": "./assets/places/dead-sea-mud.jpg",
     "width": 960,
     "height": 1280,
@@ -211,7 +211,7 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "bedouin-tent",
-    "alt": "אוהל אירוח בדואי",
+    "alt": "מארח מוזג משקה חם מקומקום",
     "src": "./assets/places/bedouin-tent.jpg",
     "width": 736,
     "height": 1280,
@@ -222,14 +222,25 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "weaving",
-    "alt": "אריגת שטיח על נול",
+    "alt": "אריגה על נול",
     "src": "./assets/places/weaving.jpg",
     "width": 1280,
-    "height": 758,
-    "author": "Scharf, J. Thomas (John Thomas), 1843-1898,",
-    "license": "No restrictions",
-    "licenseUrl": "https://www.flickr.com/commons/usage/",
-    "source": "https://commons.wikimedia.org/wiki/File:Alexander_Smith_and_Sons_carpet_weaving_mills_in_Yonkers,_New_York.jpg"
+    "height": 960,
+    "author": "Danny-w",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bedouin_woman_weaving.jpg"
+  },
+  {
+    "id": "fishing",
+    "alt": "סירות דייגים בנמל",
+    "src": "./assets/places/fishing.jpg",
+    "width": 1280,
+    "height": 882,
+    "author": "Noam.armonn",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:OLD_JAFFA_PORT.jpg"
   },
   {
     "id": "market",
@@ -243,6 +254,17 @@ export const PLACE_PHOTOS = [
     "source": "https://commons.wikimedia.org/wiki/File:Mahane_Yehuda_(I)_(45298221191).jpg"
   },
   {
+    "id": "sahlab",
+    "alt": "סחלב חם",
+    "src": "./assets/places/sahlab.jpg",
+    "width": 1173,
+    "height": 1171,
+    "author": "DesignbyNur",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Salep_drink.jpg"
+  },
+  {
     "id": "baklava",
     "alt": "מגש בקלאווה",
     "src": "./assets/places/baklava.jpg",
@@ -252,6 +274,28 @@ export const PLACE_PHOTOS = [
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Baklava_ve_havu%C3%A7_dilimi.jpg"
+  },
+  {
+    "id": "druze-pita",
+    "alt": "פיתה דרוזית על סאג׳",
+    "src": "./assets/places/druze-pita.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Adem Durdu",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Yufka_ekmek.jpg"
+  },
+  {
+    "id": "labneh",
+    "alt": "לבנה עם שמן זית",
+    "src": "./assets/places/labneh.jpg",
+    "width": 1280,
+    "height": 1280,
+    "author": "Takeaway",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Turkish_strained_yogurt.jpg"
   },
   {
     "id": "western-wall",
