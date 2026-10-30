@@ -172,3 +172,37 @@ jobs:
           if (JSON.parse(raw).ok !== true) throw new Error('Unexpected Gemini connection-check response.');
           console.log(JSON.stringify({ ok: true, requestedModel: model, servedModel: data.modelVersion || null }));
           NODE
+
+      # The site's real prompts and response schemas, on fixed sample sentences (no learner data):
+      # proves the pinned model accepts them, not just a one-line test.
+      - name: Grading prompts check
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { SYSTEM, GRADE_SCHEMA, WRITE_SCHEMA, gradePrompt, writePrompt } from './worker/src/prompts.js';
+          const config = JSON.parse(readFileSync('worker/wrangler.jsonc', 'utf8')
+            .split('\n').filter(line => !line.trim().startsWith('//')).join('\n'));
+          const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + config.vars.GEMINI_MODEL + ':generateContent';
+          async function ask(text, schema) {
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+              body: JSON.stringify({
+                systemInstruction: { parts: [{ text: SYSTEM }] },
+                contents: [{ role: 'user', parts: [{ text }] }],
+                generationConfig: { thinkingConfig: { thinkingLevel: 'low' }, responseMimeType: 'application/json', responseSchema: schema },
+              }),
+              signal: AbortSignal.timeout(90000),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + (data.error?.message || 'unknown'));
+            return JSON.parse(data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '');
+          }
+          const graded = await ask(gradePrompt([{ id: 'x1', prompt: 'אני רוצה לאכול סושי.', target: 'Genki L11: 〜たい', models: ['すしが食べたいです。'], answer: 'すしを食べたい' }]), GRADE_SCHEMA);
+          if (![0, 1, 2].includes(graded.results?.[0]?.score)) throw new Error('Unexpected grade: ' + JSON.stringify(graded));
+          const written = await ask(writePrompt({ prompt: 'כתוב שני משפטים על סוף השבוע.', answer: '週末は海に行きました。楽しかったです。', catalog: 'g09-1: past short forms — עבר בצורה קצרה' }), WRITE_SCHEMA);
+          if (typeof written.summary !== 'string' || !Array.isArray(written.errors)) throw new Error('Unexpected writing result');
+          console.log(JSON.stringify({ grade: graded.results[0].score, writing: written.task_done }));
+          NODE

@@ -12,13 +12,13 @@ export const PLAN = {
 
 // Minutes of a regular day (6 days a week) and of the weekly 90-minute conversation with a person.
 export const ROUTINE = [
-  { kind: 'words', label: 'מילים וצירופים', minutes: 10 },
-  { kind: 'kanji', label: 'קנג׳י בתוך מילים', minutes: 5 },
-  { kind: 'grammar', label: 'דקדוק והפקה', minutes: 15 },
-  { kind: 'input', label: 'קריאה / האזנה', minutes: 8 },
-  { kind: 'speaking', label: 'דיבור בקול', minutes: 15 },
+  { kind: 'words', ui: 'taskWords', label: 'מילים וצירופים', minutes: 10 },
+  { kind: 'kanji', ui: 'taskKanji', label: 'קנג׳י בתוך מילים', minutes: 5 },
+  { kind: 'grammar', ui: 'taskGrammar', label: 'דקדוק והפקה', minutes: 15 },
+  { kind: 'input', ui: 'taskInput', label: 'קריאה / האזנה', minutes: 8 },
+  { kind: 'speaking', ui: 'taskSpeaking', label: 'דיבור בקול', minutes: 15 },
 ];
-export const MEETING = { kind: 'meeting', label: 'שיחה של 90 דקות', minutes: 90 };
+export const MEETING = { kind: 'meeting', ui: 'taskMeeting', label: 'שיחה של 90 דקות', minutes: 90 };
 
 // When each lesson is due to be finished in the current schedule (used for the pace line).
 export const LESSON_DUE = {

@@ -1,6 +1,8 @@
 // Router and boot. Each view exports render(root, params, ctx) and may return a cleanup function.
 
 import { currentUser } from './lib/auth.js';
+import { resetAiCheck } from './lib/check.js';
+import { bi } from './lib/ui.js';
 import * as store from './lib/store.js';
 import * as home from './views/home.js';
 import * as plan from './views/plan.js';
@@ -41,19 +43,13 @@ function render({ scroll = true } = {}) {
   if (scroll) window.scrollTo({ top: 0 });
 }
 
-const SYNC_TEXT = {
-  idle: '',
-  syncing: 'מסנכרן…',
-  ok: 'מסונכרן',
-  offline: 'לא מחובר',
-  'no-table': 'שמור בדפדפן בלבד',
-  error: 'שגיאת סנכרון',
-};
+const SYNC_KEY = { syncing: 'syncing', ok: 'synced', offline: 'offline', 'no-table': 'localOnly', error: 'syncError' };
 
 function showSync() {
   syncButton.dataset.state = store.sync.state;
-  syncButton.querySelector('.sync-text').textContent = SYNC_TEXT[store.sync.state] ?? '';
-  syncButton.title = store.sync.message || SYNC_TEXT[store.sync.state] || '';
+  const key = SYNC_KEY[store.sync.state];
+  syncButton.querySelector('.sync-text').innerHTML = key ? bi(key) : '';
+  syncButton.title = store.sync.message || syncButton.querySelector('.bi-he')?.textContent || '';
 }
 
 syncButton.addEventListener('click', () => store.pull());
@@ -64,7 +60,15 @@ store.subscribe(() => {
   if (current?.live) render({ scroll: false });
 });
 
+// Furigana are on unless switched off (journey page switch); a per-device preference.
+try {
+  document.documentElement.classList.toggle('no-furi', localStorage.getItem('kotoba-furigana') === '0');
+} catch {
+  // Storage blocked: furigana stay on.
+}
+
 function start() {
+  resetAiCheck();
   const user = currentUser();
   if (user) store.open(user);
   render();
