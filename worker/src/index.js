@@ -91,7 +91,7 @@ async function speech(body, env) {
 }
 
 async function gemini(env, parts, schema) {
-  const model = env.GEMINI_MODEL || 'gemini-flash-latest';
+  const model = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
@@ -100,8 +100,13 @@ async function gemini(env, parts, schema) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM }] },
         contents: [{ role: 'user', parts }],
-        generationConfig: { temperature: 0.2, responseMimeType: 'application/json', responseSchema: schema },
+        generationConfig: {
+          thinkingConfig: { thinkingLevel: 'low' },
+          responseMimeType: 'application/json',
+          responseSchema: schema,
+        },
       }),
+      signal: AbortSignal.timeout(90_000),
     },
   );
   if (!response.ok) {

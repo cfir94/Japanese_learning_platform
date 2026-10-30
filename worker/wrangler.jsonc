@@ -8,8 +8,8 @@
   "workers_dev": true,
   "observability": { "enabled": true },
   "vars": {
-    // "latest" always points at the current Flash model, available on the free tier; it accepts audio.
-    "GEMINI_MODEL": "gemini-flash-latest",
+    // Pinned model: text/audio input and structured output; verified in this project's Free tier.
+    "GEMINI_MODEL": "gemini-3.5-flash-lite",
     "ALLOWED_ORIGINS": "https://cfir94.github.io,http://127.0.0.1:4173,http://localhost:4173",
     // Only these accounts may use the Gemini quota: SHA-256 of the lowercase email, comma-separated.
     "ALLOWED_EMAIL_HASHES": "694deac204ad8a8f6ba3ea88fe113004462d64b47e1366c0be48afd0a045cbb1",
