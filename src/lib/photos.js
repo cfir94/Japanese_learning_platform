@@ -1,7 +1,7 @@
 // Markup for our photos (polaroids) and for journey photos (banners, postcards),
 // and the credits dialog that Commons licences require.
 
-import { esc } from './ui.js';
+import { esc, jp } from './ui.js';
 import { memory, memoriesOfDay, OPENING_PAIR } from '../data/memories.js';
 import { PLACE_PHOTOS, entriesWithPhotos } from '../data/places.js';
 
@@ -27,7 +27,7 @@ export function img(image, attrs = '', entry = null) {
 }
 
 export function names(entry) {
-  return `<b>${esc(entry.he)}</b><span lang="ja">${esc(entry.ja)}</span>${entry.reading ? `<span class="rd" lang="ja">${esc(entry.reading)}</span>` : ''}`;
+  return `<b>${esc(entry.he)}</b><span lang="ja">${jp(entry.ja)}</span>`;
 }
 
 // A photo across the top of a card, with the entry's Hebrew and Japanese name; links to its page.
@@ -35,7 +35,7 @@ export function banner(entry, tagline = '') {
   if (!entry) return '';
   return `<a class="banner" href="#/journey/${entry.id}">
     ${img(entry.image)}
-    ${tagline ? `<span class="tagline">${esc(tagline)}</span>` : ''}
+    ${tagline ? `<span class="tagline">${tagline}</span>` : ''}
     <div class="label">${names(entry)}</div>
   </a>`;
 }

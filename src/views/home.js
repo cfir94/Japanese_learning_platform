@@ -2,7 +2,7 @@
 
 import * as store from '../lib/store.js';
 import { israelDay, weekday, shortDate } from '../lib/dates.js';
-import { esc, rich, statusBar, legend, countStatuses } from '../lib/ui.js';
+import { esc, rich, jp, bi, marks, jaWeekday, kanjiList, statusBar, legend, countStatuses } from '../lib/ui.js';
 import { WEEKS, PLAN } from '../data/plan.js';
 import { PARTS } from '../data/placement.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
@@ -56,11 +56,11 @@ function hero(today) {
   return `<section class="hero">
     ${openingPair()}
     <div>
-      <p class="who" lang="ja">正美お母さん・美礼ちゃん</p>
+      <p class="who" lang="ja">${marks('正美{まさみ}お母{かあ}さん・美礼{みのり}ちゃん')}</p>
       ${left > 0
         ? `<div class="countdown num">${left}<small>ימים</small></div>
            <p class="sub">עד שמאסאמי ומינורי נוחתות בישראל · 11.3</p>
-           <p class="ato" lang="ja">あと${left}日</p>`
+           <p class="ato" lang="ja">${marks(`二人{ふたり}がイスラエルに着{つ}くまで、あと${left}日{にち}`)}</p>`
         : `<div class="countdown">ようこそ</div><p class="sub">הן כאן.</p>`}
     </div>
   </section>`;
@@ -71,8 +71,8 @@ function journeyCard() {
   const cards = postcards();
   if (!cards) return '';
   return `<section class="card">
-    <div class="row between"><h2 style="margin:0"><span class="ico">✈️</span> המסע · <span dir="ltr">11–18.3</span></h2>
-      <a class="btn quiet small" href="#/journey">לכל המסע ←</a></div>
+    <div class="row between"><h2 style="margin:0"><span class="ico">✈️</span> ${bi('journey')} · <span dir="ltr">11–18.3</span></h2>
+      <a class="btn quiet small" href="#/journey">${bi('allJourney')} ←</a></div>
     <div class="tabs" style="margin:10px 0 6px">${CATEGORIES.map((c) => `<a href="#/journey/${c.id}"><span aria-hidden="true">${c.icon}</span> ${esc(c.he)}</a>`).join('')}</div>
     ${cards}
   </section>`;
@@ -86,8 +86,8 @@ function journeyExample(week, today) {
   const n = [...today].reduce((h, c) => h + c.charCodeAt(0), 0) % pool.length;
   const s = pool[n];
   return `<a class="example" href="#/journey/${s.entry.id}">
-    <span class="from">דוגמה מהמסע · ${esc(s.entry.he)}</span>
-    <p class="s-ja" lang="ja">${esc(s.ja)}</p>
+    <span class="from">${bi('example')} · ${esc(s.entry.he)} <span lang="ja">${jp(s.entry.ja)}</span></span>
+    <p class="s-ja" lang="ja">${jp(s.ja)}</p>
     <p class="s-he">${rich(s.he)}</p>
   </a>`;
 }
@@ -99,10 +99,10 @@ function voiceCard(today, events) {
   const minutes = sessions.reduce((s, e) => s + (e.data.minutes || 0), 0);
   const last = sessions.at(-1)?.data;
   return `<section class="card">
-    <h2><span class="ico">🎙️</span> שיחה קולית עם ChatGPT</h2>
+    <h2><span class="ico">🎙️</span> ${bi('voice')}</h2>
     <div class="row between wrap">
       <p class="lead num" style="margin:0">${sessions.length ? `השבוע: ${sessions.length} שיחות · ${minutes} דקות` : 'השבוע עוד לא היו שיחות.'}</p>
-      <div class="row"><button class="btn" id="copy-brief">העתקת התדריך</button><button class="btn" id="paste-summary">הדבקת סיכום</button></div>
+      <div class="row"><button class="btn" id="copy-brief">${bi('copyBrief')}</button><button class="btn" id="paste-summary">${bi('pasteSummary')}</button></div>
     </div>
     ${last?.mistakes?.length ? `<p class="small muted" style="margin:10px 0 0">מהשיחה האחרונה: ${last.mistakes.slice(0, 3).map(rich).join(' · ')}</p>` : ''}
   </section>`;
@@ -150,13 +150,13 @@ function placementCard(events) {
   if (doneParts === PARTS.length) return '';
   const started = progress.some((p) => p.done > 0);
   return `<section class="card notice">
-    <h2><span class="ico">📍</span> שלב ראשון</h2>
+    <h2><span class="ico">📍</span> ${bi('firstStep')}</h2>
     <div class="row between wrap">
       <div>
-        <div class="title">מבחן מיקום</div>
+        <div class="title">${bi('placement', { stack: true })}</div>
         <p class="lead">דקדוק משיעור 8 עד 23, כתיבה ודיבור. לפיו נדע מה כבר יושב ומה לא, ונכייל את התוכנית.</p>
       </div>
-      <a class="btn accent" href="#/test">${started ? 'להמשיך' : 'להתחיל'}</a>
+      <a class="btn accent" href="#/test">${bi(started ? 'resume' : 'start')}</a>
     </div>
     <p class="small muted num" style="margin:10px 0 0">${doneParts} מתוך ${PARTS.length} חלקים הושלמו</p>
   </section>`;
@@ -175,8 +175,8 @@ function todayCard(today, tasks) {
   const prog = dayProgress(week, day, tasks);
   return `<section class="card">
     <div class="row between">
-      <span class="eyebrow">${rich(weekday(today))} · ${shortDate(today)}</span>
-      <span class="eyebrow num">שבוע ${week.week} מתוך ${WEEKS.length}</span>
+      <span class="eyebrow">${rich(weekday(today))} ${jaWeekday(today)} · ${shortDate(today)}</span>
+      <span class="eyebrow num">שבוע ${week.week} מתוך ${WEEKS.length} <span lang="ja">${marks(`第{だい}${week.week}週{しゅう}`)}</span></span>
     </div>
     <div class="today-topic">${rich(day.topic)}</div>
     ${journeyExample(week, today)}
@@ -184,11 +184,11 @@ function todayCard(today, tasks) {
       ${list.map((t) => `<li><label class="task ${tasks[t.id] ? 'done' : ''}">
         <input type="checkbox" data-task="${t.id}" ${tasks[t.id] ? 'checked' : ''}>
         <span class="ico" aria-hidden="true">${ICONS[t.kind] ?? ''}</span>
-        <span class="label">${rich(t.label)}</span><span class="min num">${t.minutes} דק׳</span>
+        <span class="label">${bi(t.ui)}</span><span class="min num">${t.minutes} דק׳ <span lang="ja">${marks('分{ふん}')}</span></span>
       </label></li>`).join('')}
     </ul>
     <div class="dayline" aria-hidden="true"><i style="width:${prog.minutes ? (prog.doneMinutes / prog.minutes) * 100 : 0}%"></i></div>
-    <p class="small muted num" style="margin:8px 0 0">${prog.doneMinutes === prog.minutes ? 'היום הושלם. よくできました！' : `${prog.doneMinutes} מתוך ${prog.minutes} דקות`}</p>
+    <p class="small muted num" style="margin:8px 0 0">${prog.doneMinutes === prog.minutes ? 'היום הושלם. <span lang="ja">よくできました！</span>' : `${prog.doneMinutes} מתוך ${prog.minutes} דקות`}</p>
   </section>`;
 }
 
@@ -203,17 +203,17 @@ function weekCard(today, tasks) {
       d.offset === 1 ? 'meet' : '',
     ].join(' ');
     const letter = 'אבגדהוש'[new Date(`${d.date}T12:00:00Z`).getUTCDay()];
-    return `<div class="daycell ${cls}" title="${esc(d.topic)}">${letter}׳<b class="num">${shortDate(d.date).split('.')[0]}</b></div>`;
+    return `<div class="daycell ${cls}" title="${esc(d.topic)}">${letter}׳ ${jaWeekday(d.date, true)}<b class="num">${shortDate(d.date).split('.')[0]}</b></div>`;
   }).join('');
   return `<section class="card">
-    ${banner(placeOfWeek(week.week), 'היעד של השבוע')}
-    <h2>השבוע · ${rich(week.anchor)}</h2>
+    ${banner(placeOfWeek(week.week), bi('weekPlace'))}
+    <h2>${bi('thisWeek')} · ${rich(week.anchor)}</h2>
     <div class="title">${rich(week.title)}</div>
-    <p class="lead">שיחה: ${rich(week.conversation.title)}</p>
-    <p class="expr" lang="ja">${rich(week.conversation.expression)}</p>
+    <p class="lead">${bi('conversation')}: ${rich(week.conversation.title)}</p>
+    <p class="expr" lang="ja">${jp(week.conversation.expression)}</p>
     <p class="small muted" style="margin:0">${rich(week.conversation.target)}</p>
     <div class="days">${cells}</div>
-    <p class="small muted" style="margin:10px 0 0">מילים: ${rich(week.vocabulary)} · קנג׳י: <span lang="ja">${rich(week.kanji)}</span></p>
+    <p class="small muted" style="margin:10px 0 0">${bi('words')}: ${rich(week.vocabulary)} · ${bi('kanji')}: ${kanjiList(week.kanji)}</p>
   </section>`;
 }
 
@@ -236,12 +236,12 @@ function pictureCard(today, events, statuses) {
   }).join('');
 
   return `<section class="card">
-    <h2><span class="ico">🧭</span> התמונה הגדולה</h2>
-    <div class="title">איפה אני בתוכנית עד מרץ</div>
+    <h2><span class="ico">🧭</span> ${bi('bigPicture')}</h2>
+    <div class="title">${bi('whereInPlan', { stack: true })}</div>
     <div class="stats">
-      <div class="stat"><b>${known}<small class="muted" style="font-size:14px">/${scope.length}</small></b><span>נקודות דקדוק שיושבות</span></div>
-      <div class="stat"><b>${p.doneDays}<small class="muted" style="font-size:14px">/${p.totalDays}</small></b><span>ימי תוכנית שהושלמו</span></div>
-      <div class="stat"><b>${hours(p.minutesDone)}<small class="muted" style="font-size:14px">/${Math.round(p.minutesPlanned / 60)}</small></b><span>שעות לימוד</span></div>
+      <div class="stat"><b>${known}<small class="muted" style="font-size:14px">/${scope.length}</small></b><span>${bi('pointsKnown', { stack: true })}</span></div>
+      <div class="stat"><b>${p.doneDays}<small class="muted" style="font-size:14px">/${p.totalDays}</small></b><span>${bi('daysDone', { stack: true })}</span></div>
+      <div class="stat"><b>${hours(p.minutesDone)}<small class="muted" style="font-size:14px">/${Math.round(p.minutesPlanned / 60)}</small></b><span>${bi('studyHours', { stack: true })}</span></div>
     </div>
     ${statusBar(counts, scope.length, expected / scope.length)}
     <p class="small muted" style="margin:8px 0 0">הקו: כמה נקודות הלוח מצפה שיישבו עד היום (${expected}). ${paceLine}</p>

@@ -1,4 +1,5 @@
 import { quickAuth, friendlyError } from '../lib/auth.js';
+import { bi } from '../lib/ui.js';
 import { openingPair } from '../lib/photos.js';
 
 export function render(root, { onDone }) {
@@ -6,13 +7,13 @@ export function render(root, { onDone }) {
     <section class="login card">
       ${openingPair()}
       <p class="eyebrow">ことば — הדרך ליפנית</p>
-      <h1 class="title">כניסה</h1>
+      <h1 class="title">${bi('login', { stack: true })}</h1>
       <p class="lead">אותה כניסה כמו באתר מורי הדרך: שם ומייל, בלי סיסמה. המעקב נשמר בחשבון ומסונכרן בין מכשירים.</p>
       <form id="login-form">
-        <label class="field"><span>שם</span><input name="name" autocomplete="name" required></label>
-        <label class="field"><span>מייל</span><input name="email" type="email" autocomplete="email" dir="ltr" required></label>
+        <label class="field"><span>${bi('name')}</span><input name="name" autocomplete="name" required></label>
+        <label class="field"><span>${bi('email')}</span><input name="email" type="email" autocomplete="email" dir="ltr" required></label>
         <p class="error" id="login-error" hidden></p>
-        <div class="actions"><button class="btn primary" type="submit">כניסה</button></div>
+        <div class="actions"><button class="btn primary" type="submit">${bi('login')}</button></div>
       </form>
     </section>`;
   const form = root.querySelector('#login-form');

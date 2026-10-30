@@ -3,10 +3,11 @@
 // The Gemini key lives only here (a Worker secret). Every request must carry the
 // learner's Supabase access token; the Worker verifies it with Supabase and accepts
 // only the accounts listed (as email hashes) in ALLOWED_EMAIL_HASHES, so nobody else
-// can spend the quota.
+// can spend the quota. /me tells a signed-in account whether it is on that list.
 //
 // Routes:
 //   GET  /health
+//   GET  /me                                                               → { allowed, model }
 //   POST /grade   { items: [{ id, prompt, target, models, answer }] }      → { results }
 //   POST /write   { id, prompt, answer, catalog }                          → { result }
 //   POST /speech  { id, prompt, catalog, audio (base64), mime }            → { result }
@@ -17,7 +18,7 @@ const MAX_ITEMS = 12;
 const MAX_TEXT = 4000;
 const MAX_AUDIO_BASE64 = 8_000_000; // ≈ 6 MB of audio, a few minutes of webm/opus
 
-const tokenCache = new Map(); // access token → { email, until }
+const tokenCache = new Map(); // access token → { allowed, until }
 
 export default {
   async fetch(request, env) {
@@ -28,12 +29,16 @@ export default {
     const url = new URL(request.url);
     try {
       if (url.pathname === '/health') return json({ ok: true, model: env.GEMINI_MODEL }, 200, cors);
-      if (request.method !== 'POST') return json({ error: 'not_found' }, 404, cors);
+      const known = request.method === 'POST' || url.pathname === '/me';
+      if (!known) return json({ error: 'not_found' }, 404, cors);
       if (!cors['Access-Control-Allow-Origin']) return json({ error: 'forbidden_origin' }, 403, cors);
 
       const user = await verifyUser(request, env);
       if (!user) return json({ error: 'unauthorized' }, 401, cors);
+      if (url.pathname === '/me') return json({ allowed: user.allowed, model: env.GEMINI_MODEL }, 200, cors);
+      if (!user.allowed) return json({ error: 'not_allowed' }, 403, cors);
 
+      if (request.method !== 'POST') return json({ error: 'not_found' }, 404, cors);
       const body = await request.json().catch(() => null);
       if (!body || typeof body !== 'object') return json({ error: 'bad_request' }, 400, cors);
 
@@ -138,8 +143,8 @@ async function verifyUser(request, env) {
   const user = await response.json();
   const email = String(user?.email || '').trim().toLowerCase();
   const allowed = String(env.ALLOWED_EMAIL_HASHES || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
-  if (!email || !allowed.includes(await sha256(email))) return null;
-  const entry = { email, until: now + 5 * 60_000 };
+  if (!email) return null;
+  const entry = { allowed: allowed.includes(await sha256(email)), until: now + 5 * 60_000 };
   tokenCache.set(token, entry);
   if (tokenCache.size > 50) tokenCache.delete(tokenCache.keys().next().value);
   return entry;

@@ -5,20 +5,60 @@
 // typed in, so a part can be left and resumed on any device.
 
 import * as store from '../lib/store.js';
-import { esc, rich, statusBar, legend, countStatuses, ring } from '../lib/ui.js';
-import { checkBlank, aiAvailable, gradeItems, gradeWriting, gradeSpeech } from '../lib/check.js';
+import { esc, rich, jp, marks, bi, pair, statusBar, legend, countStatuses, ring } from '../lib/ui.js';
+import { checkBlank, aiAvailable, aiStatus, aiStatusText, gradeItems, gradeWriting, gradeSpeech } from '../lib/check.js';
 import { PARTS, ITEMS, WRITING, SPEAKING, itemsOfPart } from '../data/placement.js';
 import { LESSONS, GRAMMAR, POINT, catalogForGrading } from '../data/grammar.js';
 import { polaroid } from '../lib/photos.js';
 import { memory, memoriesOfDay } from '../data/memories.js';
 import { israelDay } from '../lib/dates.js';
+import { UI_JA } from '../data/ui-ja.js';
 import { STATUS, placementState, partProgress, pointStatuses } from '../logic/progress.js';
 
 export let live = false;
 
 const ITEM_BY_ID = Object.fromEntries(ITEMS.map((i) => [i.id, i]));
-const RESULT_LABEL = { ok: 'נכון', partial: 'חלקי', miss: 'לא נכון', unknown: 'לא למדתי', pending: 'ממתין לבדיקה' };
+const RESULT_LABEL = { ok: 'rOk', partial: 'rPartial', miss: 'rMiss', unknown: 'rUnknown', pending: 'rPending' };
 const RESULT_STATUS = { ok: 'known', partial: 'partial', miss: 'gap', unknown: 'new', pending: 'pending' };
+
+const lessonLabel = (n) => pair(`שיעור ${n}`, marks(`第{だい}${n}課{か}`));
+const taskLabel = (n) => pair(`משימה ${n}`, marks(`課題{かだい}${n}`));
+
+function partTitle(p) {
+  if (p.id === 'W') return bi('writing', { stack: true });
+  if (p.id === 'S') return bi('speaking', { stack: true });
+  const [first, last] = [p.lessons[0], p.lessons.at(-1)];
+  return pair(p.title, marks(`文法{ぶんぽう}・第{だい}${first}〜${last}課{か}`), { stack: true });
+}
+
+// A Japanese sentence with its blank: furigana come from the whole sentence, then ＿＿ becomes the gap.
+const withBlank = (text) => jp(text).replace(/＿+/, '<span class="blank"></span>');
+
+// For checking without Gemini: a ready request to paste into ChatGPT or Claude.
+function chatRequest(task, text) {
+  return `אני לומד יפנית (Genki, שיעורים 8–23). זו משימת כתיבה ממבחן המיקום שלי:
+${task}
+
+מה שכתבתי:
+${text}
+
+בדוק בבקשה: מה נכון, הטעויות האמיתיות (עם תיקון והסבר קצר בעברית), ונוסח מתוקן שנשאר קרוב לניסוח שלי. לא לפסול משלב מנומס או יומיומי, ולא השמטה טבעית של חלקיקים.`;
+}
+
+function speakingRequest() {
+  return `אני לומד יפנית (Genki, שיעורים 8–23). זה חלק הדיבור של מבחן המיקום שלי. תן לי משימה אחת בכל פעם, בעברית, ואני אענה בקול ביפנית. אחרי כל תשובה: מה עבד, הטעות החשובה ביותר ותיקון קצר. לא לתת ציון להגייה.
+
+${SPEAKING.map((s, n) => `${n + 1}. ${s.he} (עד ${s.seconds} שניות)`).join('\n')}`;
+}
+
+async function copyTo(button, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    button.innerHTML = bi('copied');
+  } catch {
+    button.textContent = 'ההעתקה נחסמה בדפדפן';
+  }
+}
 
 export function render(root, route) {
   const [part] = route.rest;
@@ -51,8 +91,8 @@ function renderOverview(root) {
   root.innerHTML = `<div class="stack">
     <section class="card">
       <div class="cheer">${polaroid(memory('memory-03'), 'tilt-s')}<div>
-      <h2><span class="ico">📍</span> מבחן מיקום</h2>
-      <div class="title">איפה אני באמת עומד?</div>
+      <h2><span class="ico">📍</span> ${bi('placement')}</h2>
+      <div class="title">${bi('whereAmI', { stack: true })}</div>
       <p class="lead small" lang="ja" style="color:var(--accent)">がんばって！</p></div></div>
       <p class="lead">המבחן עובר על כל נקודות הדקדוק של Genki משיעור 8 עד 23, ומוסיף כתיבה ודיבור. התוצאה צובעת את התוכנית: מה כבר יושב, מה חלקי ומה עוד לא נלמד.</p>
       <ul class="small" style="margin:12px 0 0;padding-inline-start:18px;color:var(--muted)">
@@ -64,27 +104,26 @@ function renderOverview(root) {
       <p class="small" id="ai-status" style="margin:12px 0 0"></p>
     </section>
     <section class="card">
-      <h2>החלקים</h2>
+      <h2>${bi('parts')}</h2>
       <ul class="parts">
         ${PARTS.map((p) => {
           const { done, total } = partProgress(p.id, state);
-          const label = done >= total ? 'לצפות' : done ? 'להמשיך' : 'להתחיל';
+          const label = bi(done >= total ? 'view' : done ? 'resume' : 'start');
           const href = done >= total ? '#/results' : `#/test/${p.id}`;
           const next = p.id === nextPart?.id;
           return `<li>${ring(done, total)}
-            <div class="info"><b>${rich(p.title)}</b><span class="small muted num">${p.book ? `${p.book} · ` : ''}${total} ${p.lessons ? 'שאלות' : 'משימות'} · כ־${p.minutes} דק׳</span></div>
+            <div class="info"><b>${partTitle(p)}</b><span class="small muted num">${p.book ? `<bdi>${p.book}</bdi> · ` : ''}${total} ${p.lessons ? 'שאלות' : 'משימות'} · כ־${p.minutes} ${bi('minutes')}</span></div>
             <a class="btn ${next ? 'primary' : ''}" href="${href}">${label}</a></li>`;
         }).join('')}
       </ul>
     </section>
-    ${anyAnswered ? '<div class="row"><a class="btn" href="#/results">לתוצאות עד עכשיו</a></div>' : ''}
+    ${anyAnswered ? `<div class="row"><a class="btn" href="#/results">${bi('soFar')}</a></div>` : ''}
   </div>`;
 
   const status = root.querySelector('#ai-status');
-  aiAvailable().then((ok) => {
-    status.innerHTML = ok
-      ? '<span style="color:var(--known)">●</span> בדיקת Gemini פעילה.'
-      : '<span style="color:var(--partial)">●</span> בדיקת Gemini עוד לא מחוברת. החלקים של הדקדוק עובדים, והתרגומים ייבדקו כשהיא תחובר. כתיבה ודיבור מחכים לה.';
+  aiStatus().then((value) => {
+    const ok = value === 'ok';
+    status.innerHTML = `<span style="color:var(${ok ? '--known' : '--partial'})">●</span> ${esc(aiStatusText(value))}${ok ? '' : ' ההשלמות נבדקות באתר; את התרגומים בודקים לבד מול תשובה לדוגמה בתוצאות, ואת הכתיבה והדיבור — בשיחה עם ChatGPT או Claude.'}`;
     if (ok) gradePending().catch(() => {});
   });
 }
@@ -165,7 +204,7 @@ function renderRunner(root, partId) {
   const frame = (inner) => {
     const pct = Math.round((index / items.length) * 100);
     root.innerHTML = `<section class="card runner">
-      <div class="row between small muted"><a class="btn quiet" href="#/test">→ יציאה</a><span class="num">${Math.min(index + 1, items.length)} / ${items.length}</span></div>
+      <div class="row between small muted"><a class="btn quiet" href="#/test">→ ${bi('exit')}</a><span class="num">${Math.min(index + 1, items.length)} / ${items.length}</span></div>
       <div class="progress" aria-hidden="true"><i style="width:${pct}%"></i></div>
       ${inner}
     </section>`;
@@ -174,11 +213,12 @@ function renderRunner(root, partId) {
   const intro = (lessonN) => {
     const lesson = LESSONS.find((l) => l.n === lessonN);
     const count = items.filter((i) => i.lesson === lessonN).length;
-    frame(`<p class="eyebrow">שיעור ${lessonN} · Genki ${lesson.book}</p>
+    frame(`<p class="eyebrow">${lessonLabel(lessonN)} · Genki ${lesson.book}</p>
       <div class="title">${rich(lesson.title)}</div>
-      <div class="chips">${GRAMMAR.filter((g) => g.lesson === lessonN).map((g) => `<span class="chip s-untested"><span class="jp" lang="ja">${rich(g.pattern)}</span></span>`).join('')}</div>
+      <p class="lead" lang="ja" style="margin-top:2px">${jp(lesson.ja)}</p>
+      <div class="chips">${GRAMMAR.filter((g) => g.lesson === lessonN).map((g) => `<span class="chip s-untested"><span class="jp" lang="ja">${jp(g.pattern)}</span></span>`).join('')}</div>
       <p class="lead" style="margin-top:14px">${count} שאלות. אם את השיעור הזה עוד לא למדת בכלל, אפשר לדלג עליו כולו.</p>
-      <div class="actions"><button class="btn quiet" id="skip-lesson">לא למדתי את השיעור הזה — דלג</button><button class="btn primary" id="go">נתחיל</button></div>`);
+      <div class="actions"><button class="btn quiet" id="skip-lesson">${bi('skipLesson')}</button><button class="btn primary" id="go">${bi('go')}</button></div>`);
     root.querySelector('#go').focus();
     root.querySelector('#go').addEventListener('click', () => {
       introSeen.add(lessonN);
@@ -197,22 +237,21 @@ function renderRunner(root, partId) {
   const question = (item) => {
     const previous = answered().get(item.id)?.answer.data;
     const prevText = previous && !previous.skipped ? String(previous.answer ?? '') : '';
-    let body = `<p class="eyebrow">שיעור ${item.lesson}</p><div class="q-he">${rich(item.he)}</div>`;
+    let body = `<p class="eyebrow">${lessonLabel(item.lesson)}</p><div class="q-he">${rich(item.he)}</div>`;
     if (item.type === 'blank') {
-      const [before, after] = item.jp.split(/＿+/);
-      body += `<p class="q-jp" lang="ja">${rich(before)}<span class="blank"></span>${rich(after)}</p>
-        <div class="q-ask">${item.base ? `<span class="base" lang="ja">${rich(item.base)}</span>` : ''}<span>${rich(item.ask)}</span></div>
+      body += `<p class="q-jp" lang="ja">${withBlank(item.jp)}</p>
+        <div class="q-ask">${item.base ? `<span class="base" lang="ja">${jp(item.base)}</span>` : ''}<span>${rich(item.ask)}</span></div>
         <input class="answer" id="ans" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(prevText)}" placeholder="החלק החסר">`;
     } else if (item.type === 'write') {
-      body += `<p class="small muted" style="margin:-6px 0 12px">כתוב ביפנית.</p>
+      body += `<p class="small muted" style="margin:-6px 0 12px">${bi('writeInJa')}</p>
         <textarea class="answer" id="ans" lang="ja" autocomplete="off" spellcheck="false" placeholder="日本語で">${esc(prevText)}</textarea>`;
     } else {
-      body += `<p class="q-jp" lang="ja">${rich(item.jp)}</p>
+      body += `<p class="q-jp" lang="ja">${jp(item.jp)}</p>
         <div class="options">${item.options.map((o, n) => `<button class="btn" data-opt="${n}">${rich(o)}</button>`).join('')}</div>`;
     }
     body += `<div class="actions">
-      <span class="row">${index > 0 ? '<button class="btn quiet" id="back">הקודם</button>' : ''}<button class="btn quiet" id="unknown">לא יודע / לא למדתי</button></span>
-      ${item.type === 'choice' ? '' : '<button class="btn primary" id="next">הבא</button>'}
+      <span class="row">${index > 0 ? `<button class="btn quiet" id="back">${bi('back')}</button>` : ''}<button class="btn quiet" id="unknown">${bi('dontKnow')}</button></span>
+      ${item.type === 'choice' ? '' : `<button class="btn primary" id="next">${bi('next')}</button>`}
     </div>
     ${item.type === 'write' ? '<p class="hint">Ctrl+Enter — הבא</p>' : ''}`;
     frame(body);
@@ -253,9 +292,9 @@ function renderRunner(root, partId) {
   };
 
   const finish = () => {
-    frame(`<div class="cheer">${polaroid(memoriesOfDay(israelDay(), 1)[0], 'tilt-l')}<div><div class="title">החלק הושלם</div>
-      <p class="lead" lang="ja" style="color:var(--accent)">お疲れさまでした！</p><p class="lead" id="grading">בודק…</p></div></div><div id="summary"></div>
-      <div class="actions"><a class="btn" href="#/results">כל התוצאות</a><a class="btn primary" href="#/test">${nextPartLabel(partId)}</a></div>`);
+    frame(`<div class="cheer">${polaroid(memoriesOfDay(israelDay(), 1)[0], 'tilt-l')}<div><div class="title">${bi('partDone', { stack: true })}</div>
+      <p class="lead" lang="ja" style="color:var(--accent)">${jp(UI_JA.wellDone)}</p><p class="lead" id="grading">בודק…</p></div></div><div id="summary"></div>
+      <div class="actions"><a class="btn" href="#/results">${bi('results')}</a><a class="btn primary" href="#/test">${nextPartLabel(partId)}</a></div>`);
     const note = root.querySelector('#grading');
     const summary = () => {
       const statuses = pointStatuses(store.all());
@@ -269,7 +308,7 @@ function renderRunner(root, partId) {
       .then(async (n) => {
         note.textContent = (await aiAvailable())
           ? n ? 'התרגומים נבדקו. הפירוט המלא בתוצאות.' : 'הכול נבדק.'
-          : 'השלמות נבדקו. התרגומים ייבדקו כשבדיקת Gemini תחובר.';
+          : 'ההשלמות נבדקו. את התרגומים בודקים לבד מול תשובה לדוגמה, במסך התוצאות.';
         summary();
       })
       .catch((e) => {
@@ -282,7 +321,7 @@ function renderRunner(root, partId) {
 
 function nextPartLabel(partId) {
   const i = PARTS.findIndex((p) => p.id === partId);
-  return PARTS[i + 1] ? `לחלק הבא` : 'סיום';
+  return bi(PARTS[i + 1] ? 'nextPart' : 'finish');
 }
 
 // ── Writing ──────────────────────────────────────────────────────────────────
@@ -292,18 +331,19 @@ function renderWriting(root) {
     const state = placementState(store.all());
     const next = WRITING.find((w) => !state.writing.has(w.id));
     root.innerHTML = `<div class="stack">
-      <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a><span class="small muted num">${state.writing.size} / ${WRITING.length}</span></div>
+      <div class="row between"><a class="btn quiet" href="#/test">→ ${bi('backToTest')}</a><span class="small muted num">${state.writing.size} / ${WRITING.length}</span></div>
       ${WRITING.map((w, n) => {
         const entry = state.writing.get(w.id);
-        if (entry) return `<section class="card"><h2>משימה ${n + 1}</h2><p>${rich(w.he)}</p>${productionResult(entry, 'writing')}</section>`;
-        if (w !== next) return `<section class="card"><h2>משימה ${n + 1}</h2><p class="muted">${rich(w.he)}</p></section>`;
-        return `<section class="card"><h2>משימה ${n + 1}</h2><div class="q-he">${rich(w.he)}</div>
+        if (entry) return `<section class="card"><h2>${taskLabel(n + 1)}</h2><p>${rich(w.he)}</p>${productionResult(entry, 'writing', w)}</section>`;
+        if (w !== next) return `<section class="card"><h2>${taskLabel(n + 1)}</h2><p class="muted">${rich(w.he)}</p></section>`;
+        return `<section class="card"><h2>${taskLabel(n + 1)}</h2><div class="q-he">${rich(w.he)}</div>
           <textarea class="answer" id="text" lang="ja" style="min-height:200px" placeholder="日本語で"></textarea>
-          <div class="actions"><span class="small muted" id="count"></span><button class="btn primary" id="send">שליחה לבדיקה</button></div>
+          <div class="actions"><span class="small muted" id="count"></span><button class="btn primary" id="send">${bi('send')}</button></div>
           <p class="error" id="err" hidden></p></section>`;
       }).join('')}
-      ${next ? '' : '<div class="row"><a class="btn primary" href="#/test">חזרה למבחן</a></div>'}
+      ${next ? '' : `<div class="row"><a class="btn primary" href="#/test">${bi('backToTest')}</a></div>`}
     </div>`;
+    bindCopy(root);
     const text = root.querySelector('#text');
     if (!text) return;
     const key = `kotoba-draft:${next.id}`;
@@ -321,7 +361,7 @@ function renderWriting(root) {
       const button = root.querySelector('#send');
       const err = root.querySelector('#err');
       button.disabled = true;
-      button.textContent = 'בודק…';
+      button.innerHTML = bi('checking');
       const sub = store.add('writing', { task: next.id, text: value });
       localStorage.removeItem(key);
       try {
@@ -358,21 +398,28 @@ function renderSpeaking(root) {
     const state = placementState(store.all());
     const next = SPEAKING.find((s) => !state.speech.has(s.id));
     root.innerHTML = `<div class="stack">
-      <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a><span class="small muted num">${state.speech.size} / ${SPEAKING.length}</span></div>
-      ${ok ? '' : '<section class="card notice small"><b>הדיבור נבדק על ידי Gemini, והבדיקה עוד לא מחוברת.</b><p>אפשר לעשות את שאר המבחן בינתיים.</p></section>'}
+      <div class="row between"><a class="btn quiet" href="#/test">→ ${bi('backToTest')}</a><span class="small muted num">${state.speech.size} / ${SPEAKING.length}</span></div>
+      ${ok || !next ? '' : `<section class="card notice small"><b>${esc(aiStatusText(await aiStatus()))}</b>
+        <p>אפשר לעשות את חלק הדיבור בשיחה קולית עם ChatGPT: מעתיקים את הבקשה, מדביקים בשיחה ועונים בקול. בסוף מסמנים כאן שזה נעשה.</p>
+        <div class="actions"><button class="btn" id="copy-speaking">${bi('copyForChat')}</button><button class="btn primary" id="done-chat">${bi('doneInChat')}</button></div></section>`}
       ${SPEAKING.map((s, n) => {
         const entry = state.speech.get(s.id);
-        if (entry) return `<section class="card"><h2>משימה ${n + 1}</h2><p>${rich(s.he)}</p>${productionResult(entry, 'speech')}</section>`;
-        if (s !== next || !ok) return `<section class="card"><h2>משימה ${n + 1}</h2><p class="muted">${rich(s.he)}</p></section>`;
-        return `<section class="card"><h2>משימה ${n + 1} · עד ${s.seconds} שניות</h2><div class="q-he">${rich(s.he)}</div>
+        if (entry) return `<section class="card"><h2>${taskLabel(n + 1)}</h2><p>${rich(s.he)}</p>${productionResult(entry, 'speech')}</section>`;
+        if (s !== next || !ok) return `<section class="card"><h2>${taskLabel(n + 1)}</h2><p class="muted">${rich(s.he)}</p></section>`;
+        return `<section class="card"><h2>${taskLabel(n + 1)} · עד ${s.seconds} שניות</h2><div class="q-he">${rich(s.he)}</div>
           <p class="small muted">חשוב רגע, ואז דבר ביפנית. אין צורך במשפטים מושלמים.</p>
-          <div class="rec"><button class="rec-btn" id="rec">הקלטה</button><span class="timer num" id="timer">0:00</span></div>
+          <div class="rec"><button class="rec-btn" id="rec">${bi('record')}</button><span class="timer num" id="timer">0:00</span></div>
           <audio id="playback" controls hidden></audio>
-          <div class="actions" id="after" hidden><button class="btn quiet" id="again">הקלטה מחדש</button><button class="btn primary" id="send">שליחה לבדיקה</button></div>
+          <div class="actions" id="after" hidden><button class="btn quiet" id="again">${bi('again')}</button><button class="btn primary" id="send">${bi('send')}</button></div>
           <p class="error" id="err" hidden></p></section>`;
       }).join('')}
-      ${next ? '' : '<div class="row"><a class="btn primary" href="#/test">חזרה למבחן</a></div>'}
+      ${next ? '' : `<div class="row"><a class="btn primary" href="#/test">${bi('backToTest')}</a></div>`}
     </div>`;
+    root.querySelector('#copy-speaking')?.addEventListener('click', (e) => copyTo(e.currentTarget, speakingRequest()));
+    root.querySelector('#done-chat')?.addEventListener('click', () => {
+      for (const s of SPEAKING.filter((x) => !state.speech.has(x.id))) store.add('speech', { task: s.id, via: 'chat' });
+      draw();
+    });
     const rec = root.querySelector('#rec');
     if (!rec) return;
     const task = next;
@@ -397,7 +444,7 @@ function renderSpeaking(root) {
       recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
       recorder.onstop = () => {
         rec.classList.remove('on');
-        rec.textContent = 'הקלטה';
+        rec.innerHTML = bi('record');
         blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
         const audio = root.querySelector('#playback');
         audio.src = URL.createObjectURL(blob);
@@ -407,7 +454,7 @@ function renderSpeaking(root) {
       recorder.start();
       seconds = 0;
       rec.classList.add('on');
-      rec.textContent = 'עצירה';
+      rec.innerHTML = bi('stop');
       root.querySelector('#after').hidden = true;
       timer = setInterval(() => {
         seconds += 1;
@@ -427,7 +474,7 @@ function renderSpeaking(root) {
       if (!blob) return;
       const button = root.querySelector('#send');
       button.disabled = true;
-      button.textContent = 'בודק… (עד חצי דקה)';
+      button.innerHTML = bi('checking');
       try {
         const audio = await toBase64(blob);
         const result = await gradeSpeech({ id: task.id, prompt: task.he, catalog: catalogForGrading(), audio, mime: blob.type });
@@ -436,7 +483,7 @@ function renderSpeaking(root) {
         draw();
       } catch (e) {
         button.disabled = false;
-        button.textContent = 'שליחה לבדיקה';
+        button.innerHTML = bi('send');
         fail(e.message);
       }
     });
@@ -455,23 +502,43 @@ function toBase64(blob) {
   });
 }
 
-function productionResult(entry, kind) {
+function bindCopy(root) {
+  root.querySelectorAll('[data-copy-task]').forEach((b) => b.addEventListener('click', () => {
+    const task = WRITING.find((w) => w.id === b.dataset.copyTask);
+    const entry = placementState(store.all()).writing.get(task.id);
+    copyTo(b, chatRequest(task.he, entry.sub.data.text));
+  }));
+}
+
+function productionResult(entry, kind, task = null) {
   const r = entry.result;
-  if (!r) return `<p class="small"><span class="tag s-pending">ממתין לבדיקה</span></p>${kind === 'writing' ? `<p class="mine jp" lang="ja">${rich(entry.sub.data.text)}</p>` : ''}`;
+  if (entry.sub.data.via === 'chat') return `<p class="small"><span class="tag s-known">${bi('checkedInChat')}</span></p>`;
+  if (!r) {
+    const copy = kind === 'writing' && task ? `<div class="actions"><button class="btn" data-copy-task="${esc(task.id)}">${bi('copyForChat')}</button></div>` : '';
+    return `<p class="small"><span class="tag s-pending">${bi('rPending')}</span></p>${kind === 'writing' ? `<p class="mine jp" lang="ja">${rich(entry.sub.data.text)}</p>${copy}` : ''}`;
+  }
   const points = (r.points ?? []).filter((p) => POINT[p.id]);
   return `
-    ${kind === 'speech' ? `<p class="small muted" style="margin-bottom:0">מה נשמע:</p><p class="jp" lang="ja" style="margin-top:2px">${rich(r.transcript)}</p>` : `<p class="jp" lang="ja">${rich(entry.sub.data.text)}</p>`}
+    ${kind === 'speech' ? `<p class="small muted" style="margin-bottom:0">${bi('heard')}</p><p class="jp" lang="ja" style="margin-top:2px">${rich(r.transcript)}</p>` : `<p class="jp" lang="ja">${rich(entry.sub.data.text)}</p>`}
     <p>${rich(r.summary)}</p>
     ${r.errors?.length ? `<ul class="small" style="padding-inline-start:18px">${r.errors.map((e) => `<li><span class="jp" lang="ja">${rich(e.original)}</span> ← <span class="jp" lang="ja" style="color:var(--known)">${rich(e.corrected)}</span> · <span class="muted">${rich(e.note)}</span></li>`).join('')}</ul>` : ''}
-    ${r.corrected_text ? `<p class="small muted" style="margin-bottom:0">גרסה מתוקנת:</p><p class="jp" lang="ja" style="margin-top:2px">${rich(r.corrected_text)}</p>` : ''}
+    ${r.corrected_text ? `<p class="small muted" style="margin-bottom:0">${bi('fixedText')}</p><p class="jp" lang="ja" style="margin-top:2px">${rich(r.corrected_text)}</p>` : ''}
     ${r.fluency_note ? `<p class="small muted">${rich(r.fluency_note)}</p>` : ''}
     ${r.pronunciation_note ? `<p class="small muted">${rich(r.pronunciation_note)}</p>` : ''}
-    ${points.length ? `<div class="chips">${points.map((p) => `<span class="chip s-${p.verdict === 'ok' ? 'known' : 'gap'}"><span class="jp" lang="ja">${rich(POINT[p.id].pattern)}</span></span>`).join('')}</div>` : ''}`;
+    ${points.length ? `<div class="chips">${points.map((p) => `<span class="chip s-${p.verdict === 'ok' ? 'known' : 'gap'}"><span class="jp" lang="ja">${jp(POINT[p.id].pattern)}</span></span>`).join('')}</div>` : ''}`;
 }
 
 // ── Results ──────────────────────────────────────────────────────────────────
 
 function renderResults(root) {
+  aiStatus().then((value) => {
+    if ((value === 'ok') !== (aiState === 'ok') && root.isConnected) {
+      aiState = value;
+      renderResults(root);
+    }
+    aiState = value;
+  });
+  const ai = aiState === 'ok';
   const events = store.all();
   const state = placementState(events);
   const statuses = pointStatuses(events);
@@ -481,21 +548,31 @@ function renderResults(root) {
     const items = ITEMS.filter((i) => i.lesson === l.n && state.items.has(i.id));
     const pts = GRAMMAR.filter((g) => g.lesson === l.n);
     return `<div class="lesson-block">
-      <div class="lesson-head"><b>שיעור ${l.n}</b><span>${rich(l.title)}</span></div>
+      <div class="lesson-head"><b>${lessonLabel(l.n)}</b><span>${rich(l.title)}</span></div>
+      <div class="small muted" lang="ja">${jp(l.ja)}</div>
       <div style="margin-top:8px">${statusBar(countStatuses(pts, statuses), pts.length)}</div>
-      <div class="chips">${pts.map((p) => `<span class="chip s-${statuses[p.id]}" title="${esc(STATUS[statuses[p.id]].label)}"><span class="jp" lang="ja">${rich(p.pattern)}</span></span>`).join('')}</div>
-      ${items.length ? `<details style="margin-top:8px"><summary class="small muted">${items.length} תשובות</summary>${items.map((i) => resultItem(i, state.items.get(i.id))).join('')}</details>` : ''}
+      <div class="chips">${pts.map((p) => `<span class="chip s-${statuses[p.id]}" title="${esc(STATUS[statuses[p.id]].label)}"><span class="jp" lang="ja">${jp(p.pattern)}</span></span>`).join('')}</div>
+      ${items.length ? `<details style="margin-top:8px" data-lesson="${l.n}"${openLessons.has(l.n) ? ' open' : ''}><summary class="small muted">${items.length} תשובות</summary>${items.map((i) => resultItem(i, state.items.get(i.id), ai)).join('')}</details>` : ''}
     </div>`;
   }).join('');
 
   root.innerHTML = `<div class="stack">
-    <div class="row between"><a class="btn quiet" href="#/test">→ למבחן</a>
-      ${pending ? `<button class="btn" id="regrade">לבדוק ${pending} תשובות שממתינות</button>` : ''}</div>
-    <section class="card"><h2>תוצאות לפי שיעור</h2>${legend(['known', 'partial', 'gap', 'pending', 'new', 'untested'])}${lessons}</section>
-    ${state.writing.size ? `<section class="card"><h2>כתיבה</h2>${WRITING.filter((w) => state.writing.has(w.id)).map((w) => `<div class="result-item"><p class="he">${rich(w.he)}</p>${productionResult(state.writing.get(w.id), 'writing')}</div>`).join('')}</section>` : ''}
-    ${state.speech.size ? `<section class="card"><h2>דיבור</h2>${SPEAKING.filter((s) => state.speech.has(s.id)).map((s) => `<div class="result-item"><p class="he">${rich(s.he)}</p>${productionResult(state.speech.get(s.id), 'speech')}</div>`).join('')}</section>` : ''}
+    <div class="row between"><a class="btn quiet" href="#/test">→ ${bi('backToTest')}</a>
+      ${pending && ai ? `<button class="btn" id="regrade">לבדוק ${pending} תשובות שממתינות</button>` : ''}</div>
+    ${pending && !ai ? `<section class="card notice small"><b>${esc(aiStatusText(aiState))}</b><p>${pending} תרגומים ממתינים. פותחים את השיעור, משווים לתשובה לדוגמה ומסמנים: ${bi('rOk')} / ${bi('rPartial')} / ${bi('rMiss')}.</p></section>` : ''}
+    <section class="card"><h2>${bi('resByLesson')}</h2>${legend(['known', 'partial', 'gap', 'pending', 'new', 'untested'])}${lessons}</section>
+    ${state.writing.size ? `<section class="card"><h2>${bi('writing')}</h2>${WRITING.filter((w) => state.writing.has(w.id)).map((w) => `<div class="result-item"><p class="he">${rich(w.he)}</p>${productionResult(state.writing.get(w.id), 'writing', w)}</div>`).join('')}</section>` : ''}
+    ${state.speech.size ? `<section class="card"><h2>${bi('speaking')}</h2>${SPEAKING.filter((s) => state.speech.has(s.id)).map((s) => `<div class="result-item"><p class="he">${rich(s.he)}</p>${productionResult(state.speech.get(s.id), 'speech')}</div>`).join('')}</section>` : ''}
   </div>`;
 
+  bindCopy(root);
+  root.querySelectorAll('details[data-lesson]').forEach((d) => d.addEventListener('toggle', () => {
+    openLessons[d.open ? 'add' : 'delete'](Number(d.dataset.lesson));
+  }));
+  root.querySelectorAll('[data-self]').forEach((b) => b.addEventListener('click', () => {
+    const [answer, item, score] = b.dataset.self.split('|');
+    store.add('grade', { answer, item, score: Number(score), self: true });
+  }));
   root.querySelector('#regrade')?.addEventListener('click', async (e) => {
     e.target.disabled = true;
     e.target.textContent = 'בודק…';
@@ -508,16 +585,20 @@ function renderResults(root) {
   });
 }
 
-function resultItem(item, entry) {
+let aiState = null;
+const openLessons = new Set(); // lessons left open in the results, kept across re-renders
+
+function resultItem(item, entry, ai) {
   const { answer, grade, result } = entry;
   let mine = answer.data.skipped ? '—' : String(answer.data.answer ?? '');
   if (item.type === 'choice' && !answer.data.skipped) mine = item.options[answer.data.answer] ?? '';
   const model = grade?.data.corrected || (item.type === 'blank' ? item.jp.replace(/＿+/, item.answers[0]) : item.type === 'choice' ? item.options[item.answer] : item.models[0]);
   return `<div class="result-item">
-    <div class="row between"><span class="he">${rich(item.he)}</span><span class="tag s-${RESULT_STATUS[result]}">${RESULT_LABEL[result]}</span></div>
-    ${item.type === 'blank' ? `<div class="small muted jp" lang="ja">${rich(item.jp)}${item.base ? ` · ${rich(item.base)}` : ''}</div>` : ''}
-    <div class="mine" ${item.type === 'choice' ? '' : 'lang="ja"'}>${rich(mine)}</div>
-    ${result === 'ok' && !grade ? '' : `<div class="model" ${item.type === 'choice' ? '' : 'lang="ja"'}>${rich(model)}</div>`}
+    <div class="row between"><span class="he">${rich(item.he)}</span><span class="tag s-${RESULT_STATUS[result]}">${bi(RESULT_LABEL[result])}</span></div>
+    ${item.type === 'blank' ? `<div class="small muted jp" lang="ja">${withBlank(item.jp)}${item.base ? ` · ${jp(item.base)}` : ''}</div>` : ''}
+    <div class="mine" lang="ja">${answer.data.skipped ? '—' : jp(mine)}</div>
+    ${result === 'ok' && !grade ? '' : `<div class="model" lang="ja">${jp(model)}</div>`}
+    ${result === 'pending' && !ai ? `<div class="self"><span class="small muted">${bi('selfCheck')}</span>${[2, 1, 0].map((score) => `<button class="btn quiet small" data-self="${esc(answer.id)}|${esc(item.id)}|${score}">${bi(['rMiss', 'rPartial', 'rOk'][score])}</button>`).join('')}</div>` : ''}
     ${grade?.data.feedback ? `<div class="fb">${rich(grade.data.feedback)}</div>` : ''}
     ${grade?.data.other ? `<div class="fb">${rich(grade.data.other)}</div>` : ''}
   </div>`;

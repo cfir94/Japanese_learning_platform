@@ -1,6 +1,6 @@
 // Checking answers: exact local check for completion items, Gemini for everything else.
 
-import { accessToken } from './auth.js';
+import { accessToken, currentUser } from './auth.js';
 
 export const API = 'https://kotoba-api.cfir94.workers.dev';
 
@@ -27,17 +27,39 @@ export function checkBlank(item, answer) {
   });
 }
 
-let health = null;
+let status = null;
+
+// Can this account use the Gemini checks right now?
+// 'ok' | 'not_allowed' (signed in, but not the account on the Worker's list) | 'signed_out' | 'offline'
+export function aiStatus() {
+  status ??= (async () => {
+    const token = await accessToken().catch(() => null);
+    if (!token) return 'signed_out';
+    const response = await fetch(`${API}/me`, { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } });
+    if (response.status === 401) return 'signed_out';
+    if (!response.ok) return 'offline';
+    return (await response.json()).allowed ? 'ok' : 'not_allowed';
+  })().catch(() => 'offline');
+  return status;
+}
 
 export async function aiAvailable() {
-  health ??= fetch(`${API}/health`, { cache: 'no-store' })
-    .then((r) => r.ok)
-    .catch(() => false);
-  return health;
+  return (await aiStatus()) === 'ok';
 }
 
 export function resetAiCheck() {
-  health = null;
+  status = null;
+}
+
+// One Hebrew line that says why the Gemini checks are not available.
+export function aiStatusText(value) {
+  const email = currentUser()?.email ?? '';
+  return {
+    ok: 'בדיקת Gemini פעילה.',
+    not_allowed: `החשבון \u2066${email}\u2069 לא ברשימת החשבונות של Gemini, ולכן התרגומים, הכתיבה והדיבור לא נבדקים אוטומטית.`,
+    signed_out: 'צריך להתחבר כדי שהתשובות ייבדקו ב־Gemini.',
+    offline: 'בדיקת Gemini לא זמינה כרגע.',
+  }[value];
 }
 
 async function call(path, body) {
@@ -51,7 +73,8 @@ async function call(path, body) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const messages = {
-      unauthorized: 'החשבון הזה לא מורשה לבדיקות Gemini.',
+      unauthorized: 'צריך להתחבר מחדש כדי לבדוק עם Gemini.',
+      not_allowed: `החשבון \u2066${currentUser()?.email ?? ''}\u2069 לא מורשה לבדיקות Gemini.`,
       rate_limited: 'Gemini עמוס כרגע. ננסה שוב בעוד דקה.',
       audio_too_long: 'ההקלטה ארוכה מדי.',
     };
