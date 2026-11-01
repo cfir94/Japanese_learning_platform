@@ -1,3 +1,4 @@
+import { CONVERSATION_REVIEW } from '../data/conversation-review.js';
 import * as store from './store.js';
 import { currentUser } from './auth.js';
 import { esc, rich, jp, bi } from './ui.js';
@@ -7,7 +8,7 @@ import { REVIEW_TYPES, lessonState, parseLessonFile, sameLesson, reviewReport } 
 const TYPE_KEY = { error: 'reviewError', retrieval: 'reviewRetrieval', vocabulary: 'reviewVocab', style: 'reviewStyle', uncertain: 'reviewUncertain' };
 
 export function reviewCard(events) {
-  const { sessions, attempts } = lessonState(events);
+  const { sessions, attempts } = lessonState(events, [CONVERSATION_REVIEW]);
   const group = (lesson, type) => {
     const items = lesson.items.filter((item) => item.type === type);
     if (!items.length) return '';
@@ -46,7 +47,7 @@ export function reviewCard(events) {
 export function bindReview(root) {
   root.querySelector('#import-lesson')?.addEventListener('click', importDialog);
   root.querySelector('#export-review')?.addEventListener('click', () => {
-    const url = URL.createObjectURL(new Blob([reviewReport(store.all())], { type: 'text/markdown;charset=utf-8' }));
+    const url = URL.createObjectURL(new Blob([reviewReport(store.all(), [CONVERSATION_REVIEW])], { type: 'text/markdown;charset=utf-8' }));
     const anchor = document.createElement('a');
     anchor.href = url;
     anchor.download = 'kotoba-conversation-review.md';
@@ -56,7 +57,7 @@ export function bindReview(root) {
   root.querySelectorAll('[data-review-say]').forEach((button) => button.addEventListener('click', () => speak(button.dataset.reviewSay)));
   root.querySelectorAll('[data-review-try]').forEach((button) => button.addEventListener('click', () => {
     const [lessonId, itemId] = button.dataset.reviewTry.split('|');
-    const lesson = lessonState(store.all()).sessions.find((entry) => entry.id === lessonId);
+    const lesson = lessonState(store.all(), [CONVERSATION_REVIEW]).sessions.find((entry) => entry.id === lessonId);
     const item = lesson?.items.find((entry) => entry.id === itemId);
     if (item) retryDialog(lesson, item);
   }));

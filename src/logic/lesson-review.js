@@ -53,8 +53,8 @@ export function parseLessonFile(raw) {
   return validateLesson(JSON.parse(embedded ?? body));
 }
 
-export function lessonState(events) {
-  const sessions = new Map();
+export function lessonState(events, builtins = []) {
+  const sessions = new Map(builtins.map((lesson) => { const valid = validateLesson(lesson); return [valid.id, valid]; }));
   const attempts = new Map();
   for (const event of events) {
     if (event.kind === 'lesson') {
@@ -80,8 +80,8 @@ export function sameLesson(lesson, events) {
   return lessonState(events).sessions.some((old) => JSON.stringify(old) === JSON.stringify(lesson));
 }
 
-export function reviewReport(events) {
-  const { sessions, attempts } = lessonState(events);
+export function reviewReport(events, builtins = []) {
+  const { sessions, attempts } = lessonState(events, builtins);
   const lines = ['# חזרה מהשיחות', '', 'התיעוד כולל מקורות וניסיונות. תרגול עצמי אינו אישור לשליטה יציבה.', ''];
   for (const lesson of sessions) {
     lines.push(`## ${lesson.date} — ${lesson.title}`, '', lesson.source.notice, '');
