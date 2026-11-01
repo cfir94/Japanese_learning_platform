@@ -72,17 +72,11 @@ jobs:
           NODE
 
       - name: Deploy Worker, secret and progress-room migration
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: worker
-          wranglerVersion: "4.40.0"
-          command: deploy
-          secrets: |
-            GEMINI_API_KEY
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node worker/deploy.mjs
 
       - name: Health check
         run: |
@@ -91,7 +85,7 @@ jobs:
             signal: AbortSignal.timeout(30000),
           });
           const health = await response.json();
-          if (!response.ok || health.ok !== true || !health.model) {
+          if (!response.ok || health.ok !== true || !health.model || health.pairing !== true) {
             throw new Error('kotoba-api health check failed: HTTP ' + response.status);
           }
           console.log(JSON.stringify(health));
