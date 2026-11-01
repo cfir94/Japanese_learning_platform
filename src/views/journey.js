@@ -22,16 +22,16 @@ function showKana() {
   }
 }
 
-export function render(root, route) {
+export function render(root, route, ctx = {}) {
   const [param] = route.rest;
-  if (param && ENTRY[param]) return renderEntry(root, ENTRY[param]);
-  return renderIndex(root, CATEGORIES.some((c) => c.id === param) ? param : 'all');
+  if (param && ENTRY[param]) return renderEntry(root, ENTRY[param], ctx);
+  return renderIndex(root, CATEGORIES.some((c) => c.id === param) ? param : 'all', ctx);
 }
 
 // ── Index ────────────────────────────────────────────────────────────────────
 
-function renderIndex(root, cat) {
-  const known = vocabState(store.all());
+function renderIndex(root, cat, ctx) {
+  const known = ctx.readOnly ? {} : vocabState(store.all());
   const all = entriesWithPhotos();
   const list = cat === 'all' ? all : all.filter((e) => e.cat === cat);
   const totalWords = all.reduce((s, e) => s + e.words.length, 0);
@@ -44,7 +44,7 @@ function renderIndex(root, cat) {
       <a href="#/journey" class="${cat === 'all' ? 'on' : ''}">${bi('all')}</a>
       ${CATEGORIES.map((c) => `<a href="#/journey/${c.id}" class="${cat === c.id ? 'on' : ''}"><span aria-hidden="true">${c.icon}</span> ${esc(c.he)} <span class="jp-mini" lang="ja">${jp(c.ja)}</span></a>`).join('')}
     </nav>
-    <p class="small muted num" style="margin:0">סימנת ${knownWords} מתוך ${totalWords} מילים כמוכרות · <span lang="ja">${jp('覚えた単語')} ${knownWords}／${totalWords}</span></p>
+    ${ctx.readOnly ? '' : `<p class="small muted num" style="margin:0">סימנת ${knownWords} מתוך ${totalWords} מילים כמוכרות · <span lang="ja">${jp('覚えた単語')} ${knownWords}／${totalWords}</span></p>`}
     <div class="journey-grid">
       ${list.map((e) => {
         const k = e.words.filter((w) => known[wordId(e, w)]).length;
@@ -59,9 +59,9 @@ function renderIndex(root, cat) {
 
 // ── One place / food / activity / topic ──────────────────────────────────────
 
-function renderEntry(root, raw) {
+function renderEntry(root, raw, ctx) {
   const entry = entryById(raw.id) ?? raw;
-  const known = vocabState(store.all());
+  const known = ctx.readOnly ? {} : vocabState(store.all());
   const cat = CATEGORIES.find((c) => c.id === entry.cat);
   const siblings = entriesWithPhotos((e) => e.cat === entry.cat);
   const i = siblings.findIndex((e) => e.id === entry.id);
@@ -97,7 +97,7 @@ function renderEntry(root, raw) {
               <span class="w-ja" lang="ja">${jp(w[0])}</span>
               <span class="w-he">${rich(w[2])}</span>
               <span class="w-actions">
-                <button class="mark" type="button" data-word="${esc(id)}" data-known="${known[id] ? 1 : 0}">${known[id] ? '✓ מכיר · 知ってる' : 'מכיר? · 知ってる？'}</button>
+                <button class="mark" type="button" ${ctx.readOnly ? 'disabled' : ''} data-word="${esc(id)}" data-known="${known[id] ? 1 : 0}">${known[id] ? '✓ מכיר · 知ってる' : 'מכיר? · 知ってる？'}</button>
                 <button class="say" type="button" data-say="${esc(w[0])}" aria-label="השמעה">🔊</button>
               </span>
             </div>`;
@@ -135,3 +135,4 @@ function renderEntry(root, raw) {
     document.documentElement.classList.toggle('no-furi', !e.target.checked);
   });
 }
+

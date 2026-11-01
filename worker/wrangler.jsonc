@@ -7,6 +7,8 @@
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
   "observability": { "enabled": true },
+  "durable_objects": { "bindings": [{ "name": "PAIR_ROOMS", "class_name": "ProgressRoom" }] },
+  "migrations": [{ "tag": "progress-rooms-v1", "new_sqlite_classes": ["ProgressRoom"] }],
   "vars": {
     // Pinned model: text/audio input and structured output; verified in this project's Free tier.
     "GEMINI_MODEL": "gemini-3.5-flash-lite",
@@ -18,3 +20,4 @@
     "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbmR4dGJheGlzem9oampzZHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2OTMzMTcsImV4cCI6MjEwMjI2OTMxN30.rDYzH-3Pz2-XOYoUgrJW7GfTvdrZ7usqbSdtTZ4my6g"
   }
 }
+

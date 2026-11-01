@@ -3,6 +3,8 @@
 import { STATUS } from '../logic/progress.js';
 import { FURIGANA, KANJI } from '../data/furigana.js';
 import { UI } from '../data/ui-ja.js';
+import { UI_EN } from '../data/ui-en.js';
+import { learner } from './learner.js';
 
 export function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -49,7 +51,8 @@ export function kanjiList(text) {
 
 // A label in Hebrew with its Japanese beside it: bi('navToday') → "היום 今日".
 export function bi(key, { stack = false } = {}) {
-  const [he, ja] = UI[key];
+  const [original, ja] = UI[key];
+  const he = learner() === 'masami' ? (UI_EN[key] || original) : original;
   return `<span class="bi${stack ? ' stack' : ''}"><span class="bi-he">${esc(he)}</span> <span class="bi-ja" lang="ja">${jp(ja)}</span></span>`;
 }
 
@@ -90,3 +93,4 @@ export function ring(done, total) {
   const p = total ? Math.round((done / total) * 100) : 0;
   return `<div class="ring" style="--p:${p}"><span>${p}%</span></div>`;
 }
+

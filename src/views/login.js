@@ -1,14 +1,16 @@
 import { quickAuth, friendlyError } from '../lib/auth.js';
-import { bi } from '../lib/ui.js';
+import { bi, jp } from '../lib/ui.js';
 import { openingPair } from '../lib/photos.js';
+import { learner } from '../lib/learner.js';
 
 export function render(root, { onDone }) {
+  const en = learner() === 'masami';
   root.innerHTML = `
     <section class="login card">
       ${openingPair()}
-      <p class="eyebrow">ことば — הדרך ליפנית</p>
+      <p class="eyebrow">ことば — ${en ? 'English together' : 'הדרך ליפנית'}</p>
       <h1 class="title">${bi('login', { stack: true })}</h1>
-      <p class="lead">אותה כניסה כמו באתר מורי הדרך: שם ומייל, בלי סיסמה. המעקב נשמר בחשבון ומסונכרן בין מכשירים.</p>
+      <p class="lead">${en ? `Use your name and email to save your own learning record. <span lang="ja">${jp('名前とメールアドレスで、自分の学習記録を保存できます。')}</span>` : 'אותה כניסה כמו באתר מורי הדרך: שם ומייל, בלי סיסמה. המעקב נשמר בחשבון ומסונכרן בין מכשירים.'}</p>
       <form id="login-form">
         <label class="field"><span>${bi('name')}</span><input name="name" autocomplete="name" required></label>
         <label class="field"><span>${bi('email')}</span><input name="email" type="email" autocomplete="email" dir="ltr" required></label>
@@ -27,9 +29,11 @@ export function render(root, { onDone }) {
       await quickAuth(form.email.value, form.name.value.trim());
       onDone();
     } catch (e) {
-      error.textContent = friendlyError(e);
+      if (en) error.innerHTML = `Could not sign in. Please check your email and connection. <span lang="ja">${jp('ログインできません。メールアドレスと接続を確認してください。')}</span>`;
+      else error.textContent = friendlyError(e);
       error.hidden = false;
       button.disabled = false;
     }
   });
 }
+

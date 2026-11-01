@@ -9,6 +9,7 @@ import { ITEMS, PARTS, WRITING, SPEAKING } from '../src/data/placement.js';
 import { WEEKS, MILESTONES, AFTER_MARCH } from '../src/data/plan.js';
 import { ENTRIES, CATEGORIES } from '../src/data/journey.js';
 import { UI_JA } from '../src/data/ui-ja.js';
+import { ENGLISH_UNITS, ENGLISH_LABELS, ENGLISH_CHECKIN } from '../src/data/english.js';
 
 const KANJI = /[㐀-鿿々]/;
 const RUN = /[　-ヿ㐀-鿿！-｠]+(?:\s+[　-ヿ㐀-鿿！-｠]+)*/gu;
@@ -44,5 +45,15 @@ for (const e of ENTRIES) {
   for (const s of [...e.sentences, e.ask]) { add(s[0]); known[s[0]] = s[1]; addRuns(s[2]); }
 }
 Object.values(UI_JA).forEach(add);
+for (const unit of ENGLISH_UNITS) {
+  add(unit.ja); add(unit.goal);
+  unit.words.forEach((word) => add(word[1]));
+  unit.examples.forEach((sentence) => add(sentence[1]));
+  unit.prompts.forEach((prompt) => add(prompt[0]));
+}
+Object.values(ENGLISH_LABELS).forEach((label) => add(label[1]));
+ENGLISH_CHECKIN.forEach((prompt) => add(prompt[1]));
+['正美お母さん', '日本語', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
 
 process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known }));
+

@@ -1,6 +1,8 @@
 // Home: what today, what this week, where in the whole plan. Nothing else.
 
 import * as store from '../lib/store.js';
+import { reviewCard, bindReview } from '../lib/lesson-review.js';
+import { partnerCard, bindPartner } from '../lib/partner-view.js';
 import { israelDay, weekday, shortDate } from '../lib/dates.js';
 import { esc, rich, jp, bi, marks, jaWeekday, kanjiList, statusBar, legend, countStatuses } from '../lib/ui.js';
 import { WEEKS, PLAN } from '../data/plan.js';
@@ -26,11 +28,13 @@ export function render(root) {
   root.innerHTML = `<div class="stack">
     ${syncNotice()}
     ${hero(today)}
+    ${partnerCard()}
     ${placementCard(events)}
     ${todayCard(today, tasks)}
     ${memoriesStrip(today)}
     ${weekCard(today, tasks)}
     ${voiceCard(today, events)}
+    ${reviewCard(events)}
     ${pictureCard(today, events, statuses)}
     ${journeyCard()}
   </div>`;
@@ -48,6 +52,8 @@ export function render(root) {
     }
   });
   root.querySelector('#paste-summary')?.addEventListener('click', openSummaryDialog);
+  bindReview(root);
+  bindPartner(root);
 }
 
 // The reason for all of this, on top of every visit.
@@ -249,3 +255,4 @@ function pictureCard(today, events, statuses) {
     ${legend(['known', 'partial', 'gap', 'pending', 'new', 'untested'])}
   </section>`;
 }
+

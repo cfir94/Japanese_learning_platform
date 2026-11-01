@@ -4,10 +4,11 @@
 import { esc, jp } from './ui.js';
 import { memory, memoriesOfDay, OPENING_PAIR } from '../data/memories.js';
 import { PLACE_PHOTOS, entriesWithPhotos } from '../data/places.js';
+import { learner } from './learner.js';
 
 export function polaroid(m, cls = '') {
   if (!m) return '';
-  return `<figure class="polaroid ${cls}" style="margin:0"><img src="${m.src}" alt="${esc(m.alt)}" style="object-position:${m.position}" loading="lazy" decoding="async"></figure>`;
+  return `<figure class="polaroid ${cls}" style="margin:0"><img src="${m.src}" alt="${esc(learner() === 'masami' ? 'A memory from Japan' : m.alt)}" style="object-position:${m.position}" loading="lazy" decoding="async"></figure>`;
 }
 
 export function openingPair() {
@@ -65,8 +66,9 @@ export function entryById(id) {
 }
 
 export function credit(image) {
-  if (!image || image.own) return image?.own ? '<p class="credit">מהתמונות שלנו</p>' : '';
-  return `<p class="credit">צילום: ${esc(image.author)} · <a href="${esc(image.licenseUrl || image.source)}" target="_blank" rel="noopener">${esc(image.license)}</a> · <a href="${esc(image.source)}" target="_blank" rel="noopener">ויקישיתוף</a></p>`;
+  const en = learner() === 'masami';
+  if (!image || image.own) return image?.own ? `<p class="credit">${en ? 'From our photos' : 'מהתמונות שלנו'}</p>` : '';
+  return `<p class="credit">${en ? 'Photo' : 'צילום'}: ${esc(image.author)} · <a href="${esc(image.licenseUrl || image.source)}" target="_blank" rel="noopener">${esc(image.license)}</a> · <a href="${esc(image.source)}" target="_blank" rel="noopener">${en ? 'Wikimedia Commons' : 'ויקישיתוף'}</a></p>`;
 }
 
 export function openCredits() {
@@ -84,3 +86,4 @@ export function openCredits() {
   dialog.addEventListener('close', () => dialog.remove());
   dialog.showModal();
 }
+

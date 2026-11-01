@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/app.css?v=7">
+  <link rel="stylesheet" href="./assets/app.css?v=20261101.8">
 </head>
 <body>
   <header class="top">
@@ -23,9 +23,14 @@
         <a href="#/test" data-nav="test"><span class="bi stack"><span class="bi-he">מבחן</span> <span class="bi-ja" lang="ja">テスト</span></span></a>
       </nav>
       <button class="sync" id="sync" type="button" aria-live="polite"><span class="dot"></span><span class="sync-text"></span></button>
+      <div class="learner-switcher" aria-label="Learner / 学習者">
+        <button type="button" data-learner="kfir" aria-pressed="true"><b>כפיר · Kfir</b><span>日本語</span></button>
+        <button type="button" data-learner="masami" aria-pressed="false"><b>正美お母さん · Masami</b><span>English</span></button>
+      </div>
     </div>
   </header>
   <main id="app" class="page" tabindex="-1"></main>
-  <script type="module" src="./src/main.js?v=7"></script>
+  <script type="module" src="./src/main.js?v=20261101.8"></script>
 </body>
 </html>
+

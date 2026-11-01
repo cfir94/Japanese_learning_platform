@@ -2,17 +2,21 @@
 
 import { currentUser } from './lib/auth.js';
 import { resetAiCheck } from './lib/check.js';
-import { bi } from './lib/ui.js';
+import { bi, jp } from './lib/ui.js';
 import * as store from './lib/store.js';
 import * as home from './views/home.js';
 import * as plan from './views/plan.js';
 import * as test from './views/test.js';
 import * as journey from './views/journey.js';
 import * as login from './views/login.js';
+import * as english from './views/english.js';
+import { learner, selectLearner } from './lib/learner.js';
+import { pairState, openPair, subscribePair } from './lib/partners.js';
+import { partnerCard, bindPartner } from './lib/partner-view.js';
 
 const root = document.getElementById('app');
 const syncButton = document.getElementById('sync');
-const VIEWS = { '': home, plan, journey, test, results: test };
+const VIEWS = { '': home, plan, journey, test, results: test, join: english };
 
 let cleanup = null;
 let current = null;
@@ -27,7 +31,15 @@ function render({ scroll = true } = {}) {
   cleanup = null;
   const user = currentUser();
   const route = parse();
+  const mode = learner();
+  document.documentElement.dir = mode === 'masami' ? 'ltr' : 'rtl';
+  document.documentElement.lang = mode === 'masami' ? 'en' : 'he';
+  document.querySelector('[data-learner="kfir"]').innerHTML = `<b>כפיר · Kfir</b><span lang="ja">${jp('日本語')}</span>`;
+  document.querySelector('[data-learner="masami"]').innerHTML = `<b lang="ja">${jp('正美お母さん')} · Masami</b><span>English</span>`;
+  const navKeys = { home: 'navToday', plan: 'navPlan', journey: 'navJourney', test: 'navTest' };
+  document.querySelectorAll('[data-learner]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.learner === mode)));
   for (const a of document.querySelectorAll('[data-nav]')) {
+    a.innerHTML = bi(navKeys[a.dataset.nav], { stack: true });
     const active = (a.dataset.nav === 'home' && route.name === '') || a.dataset.nav === route.name || (a.dataset.nav === 'test' && route.name === 'results');
     a.classList.toggle('active', active);
     if (active) a.setAttribute('aria-current', 'page');
@@ -38,8 +50,16 @@ function render({ scroll = true } = {}) {
     cleanup = login.render(root, { onDone: start });
     return;
   }
-  current = VIEWS[route.name];
-  cleanup = current.render(root, route, { rerender: () => render({ scroll: false }) }) ?? null;
+  const readOnly = Boolean(pairState.role && pairState.role !== mode);
+  const partner = pairState.snapshots[mode];
+  current = mode === 'masami' || route.name === 'join' ? english : VIEWS[route.name];
+  if (readOnly && mode === 'kfir' && (!partner || !['plan', 'journey'].includes(route.name))) {
+    current = { live: false };
+    root.innerHTML = `<div class="stack">${partnerCard()}<section class="card"><p>${bi('pairPrivacy')}</p></section></div>`;
+    bindPartner(root);
+  } else {
+    cleanup = current.render(root, route, { readOnly, partner, rerender: () => render({ scroll: false }) }) ?? null;
+  }
   if (scroll) window.scrollTo({ top: 0 });
 }
 
@@ -69,10 +89,17 @@ try {
 
 function start() {
   resetAiCheck();
+  if (parse().name === 'join') selectLearner('masami', false);
   const user = currentUser();
-  if (user) store.open(user);
+  if (user) { store.open(user); openPair(); }
   render();
 }
 
+document.querySelectorAll('[data-learner]').forEach((button) => button.addEventListener('click', () => selectLearner(button.dataset.learner)));
+addEventListener('kotoba-learner', () => render());
+subscribePair(() => {
+  if (pairState.role && pairState.role !== learner() && current !== login) render({ scroll: false });
+});
 addEventListener('hashchange', () => render());
 start();
+

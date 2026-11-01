@@ -13,6 +13,7 @@
 //   POST /speech  { id, prompt, catalog, audio (base64), mime }            → { result }
 
 import { GRADE_SCHEMA, WRITE_SCHEMA, SPEECH_SCHEMA, gradePrompt, writePrompt, speechPrompt, SYSTEM } from './prompts.js';
+export { ProgressRoom } from './pair-room.js';
 
 const MAX_ITEMS = 12;
 const MAX_TEXT = 4000;
@@ -28,7 +29,7 @@ export default {
 
     const url = new URL(request.url);
     try {
-      if (url.pathname === '/health') return json({ ok: true, model: env.GEMINI_MODEL }, 200, cors);
+      if (url.pathname === '/health') return json({ ok: true, model: env.GEMINI_MODEL, pairing: Boolean(env.PAIR_ROOMS) }, 200, cors);
       const known = request.method === 'POST' || url.pathname === '/me';
       if (!known) return json({ error: 'not_found' }, 404, cors);
       if (!cors['Access-Control-Allow-Origin']) return json({ error: 'forbidden_origin' }, 403, cors);
@@ -36,6 +37,7 @@ export default {
       const user = await verifyUser(request, env);
       if (!user) return json({ error: 'unauthorized' }, 401, cors);
       if (url.pathname === '/me') return json({ allowed: user.allowed, model: env.GEMINI_MODEL }, 200, cors);
+      if (url.pathname === '/pair' && request.method === 'POST') return await pair(request, env, user, cors);
       if (!user.allowed) return json({ error: 'not_allowed' }, 403, cors);
 
       if (request.method !== 'POST') return json({ error: 'not_found' }, 404, cors);
@@ -144,7 +146,8 @@ async function verifyUser(request, env) {
   const email = String(user?.email || '').trim().toLowerCase();
   const allowed = String(env.ALLOWED_EMAIL_HASHES || '').toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
   if (!email) return null;
-  const entry = { allowed: allowed.includes(await sha256(email)), until: now + 5 * 60_000 };
+  if (!user.id) return null;
+  const entry = { id: user.id, allowed: allowed.includes(await sha256(email)), until: now + 5 * 60_000 };
   tokenCache.set(token, entry);
   if (tokenCache.size > 50) tokenCache.delete(tokenCache.keys().next().value);
   return entry;
@@ -153,6 +156,40 @@ async function verifyUser(request, env) {
 async function sha256(value) {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function pair(request, env, user, cors) {
+  if (!env.PAIR_ROOMS) return json({ error: 'pairing_unavailable' }, 503, cors);
+  // Bound the whole payload, including when Content-Length was omitted.
+  const reader = request.body?.getReader();
+  if (!reader) return json({ error: 'bad_request' }, 400, cors);
+  let size = 0;
+  const chunks = [];
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > 64_000) { await reader.cancel(); return json({ error: 'too_large' }, 413, cors); }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
+  let body;
+  try { body = JSON.parse(new TextDecoder().decode(bytes)); }
+  catch { return json({ error: 'bad_request' }, 400, cors); }
+  if (!['create', 'join', 'get', 'update', 'leave'].includes(body?.action)) return json({ error: 'bad_request' }, 400, cors);
+  // Only the owner's existing allowlisted account may create a room.
+  if (body.action === 'create' && !user.allowed) return json({ error: 'not_allowed' }, 403, cors);
+  const code = body.action === 'create' ? crypto.randomUUID().replaceAll('-', '') : body.code;
+  if (!/^[a-f0-9]{32}$/.test(code ?? '')) return json({ error: 'bad_invite' }, 400, cors);
+  const stub = env.PAIR_ROOMS.get(env.PAIR_ROOMS.idFromName(code));
+  const result = await stub.fetch(new Request('https://room/internal', {
+    method: 'POST', headers: { 'X-Learner-ID': user.id, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: body.action, snapshot: body.snapshot }),
+  }));
+  const data = await result.json();
+  return json({ ...data, ...(body.action === 'create' && result.ok ? { code } : {}) }, result.status, cors);
 }
 
 function normalizeGrade(result, id) {
@@ -200,3 +237,4 @@ function json(data, status, headers) {
     headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
   });
 }
+

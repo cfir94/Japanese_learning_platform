@@ -10,12 +10,12 @@ import { STATUS, pointStatuses, taskState, dayDone, pace, marchScope } from '../
 
 export const live = true;
 
-export function render(root) {
+export function render(root, route, ctx = {}) {
   const today = israelDay();
   const events = store.all();
-  const tasks = taskState(events);
-  const p = pace(events, today);
-  const statuses = pointStatuses(events);
+  const tasks = ctx.readOnly ? ctx.partner?.tasks ?? {} : taskState(events);
+  const p = ctx.readOnly ? ctx.partner.pace : pace(events, today);
+  const statuses = ctx.readOnly ? { ...pointStatuses([]), ...ctx.partner.grammar } : pointStatuses(events);
   const scope = marchScope();
 
   const items = [
@@ -114,3 +114,4 @@ function lessonBlock(lesson, statuses) {
     </div>
   </details>`;
 }
+

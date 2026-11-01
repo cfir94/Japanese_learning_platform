@@ -469,3 +469,24 @@ rt { font-size: .5em; font-weight: 400; color: var(--sea); letter-spacing: 0; op
   .tl-item, .tl-item.b { width: auto; margin-inline-start: 0; padding: 0 0 14px; padding-inline-start: 30px; }
   .tl-item.a .tl-dot, .tl-item.b .tl-dot { inset-inline-start: 2px; inset-inline-end: auto; }
 }
+
+/* Imported conversation notes stay inside the existing Today screen. */
+.review-session { margin-top: 16px; }
+.review-group { margin-top: 12px; padding: 10px 0; border-top: 1px solid var(--line, #b4a99b55); }
+.review-item { margin: 8px 0; padding: 10px 12px; border-radius: 12px; background: var(--paper, #ffffff0a); }
+.review-item p { overflow-wrap: anywhere; }
+.review-dialog { width: min(620px, calc(100vw - 32px)); max-height: 88dvh; overflow: auto; }
+.review-dialog form { min-width: 0; }
+.review-dialog input[type="file"] { display: block; width: 100%; margin-top: 10px; }
+.review-dialog textarea { min-height: 150px; }
+.top-inner { flex-wrap: wrap; }
+.learner-switcher { display: flex; gap: 8px; width: 100%; justify-content: center; padding-block: 4px 8px; }
+.learner-switcher button { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line, #b4a99b77); border-radius: 999px; padding: 8px 16px; background: transparent; color: inherit; cursor: pointer; font: inherit; font-size: 13px; }
+.learner-switcher button[aria-pressed="true"] { background: var(--accent, #48766c); border-color: transparent; color: white; }
+.learner-switcher button span { font-size: 12px; opacity: .85; }
+.partner-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.partner-stats > div { border: 1px solid var(--line, #b4a99b55); border-radius: 14px; padding: 14px; overflow-wrap: anywhere; }
+.partner-stats p { margin: 8px 0 0; }
+html[lang="en"] .bi-ja { font-size: .85em; }
+html[lang="en"] textarea.answer { text-align: left; }
+@media (max-width: 540px) { .learner-switcher button { padding: 8px 10px; gap: 6px; font-size: 12px; } .partner-stats { gap: 8px; } .partner-stats > div { padding: 10px; } }
