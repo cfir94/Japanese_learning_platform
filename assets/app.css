@@ -534,3 +534,8 @@ html[lang="en"] textarea.answer { text-align: left; }
 .drill .expr { font-family: var(--font); }
 .drill .gap { width: 7.5em; margin: 0 .3em; padding: 4px 8px; font: inherit; border: 0; border-bottom: 2px solid var(--accent); background: transparent; color: var(--ink); text-align: center; }
 .drill .gap:focus { outline: none; border-bottom-color: var(--sea); }
+
+/* A short note at the bottom of the screen (e.g. why there is no sound) */
+.toast { position: fixed; z-index: 50; inset-inline: 16px; bottom: max(16px, env(safe-area-inset-bottom)); max-width: 520px; margin-inline: auto; padding: 14px 16px 14px 40px; border-radius: 16px; background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 14px; line-height: 1.6; }
+.toast p { margin: 6px 0 0; }
+.toast-close { position: absolute; top: 8px; left: 10px; border: 0; background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px; }

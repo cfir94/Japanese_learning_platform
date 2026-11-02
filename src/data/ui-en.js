@@ -12,5 +12,10 @@ export const UI_EN = {
   pairCopy: 'Copy invitation', pairRefresh: 'Refresh progress', pairDisconnect: 'Disconnect sharing',
   pairCreate: 'Create an invitation for Masami', pairFailed: 'Could not connect. Sign in and try again.',
   pairJoin: 'Connect with Cfir', pairJoinNotice: 'Connect your progress with Cfir’s. Only progress summaries are shared.',
+  voiceMissingJa: 'No sound? This device may have no Japanese voice, or the sound is off.',
+  voiceMissingEn: 'No sound? This device may have no English voice, or the sound is off.',
+  voiceHelpIos: 'On iPhone: turn off silent mode and raise the volume. If there is still no sound: Settings → Accessibility → Spoken Content → Voices, download a voice and reload the page.',
+  voiceHelpAndroid: 'On Android: raise the media volume. If there is still no sound: Settings → System → Languages → Text-to-speech output → Install voice data, then reload the page.',
+  voiceHelpDesktop: 'On a computer: add a voice in the system speech settings and reload the page.',
   pairJoinDone: 'Connected. You can start practising English.',
 };
