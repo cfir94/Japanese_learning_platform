@@ -31,6 +31,6 @@
   {"id": "salt", "search": "Dead Sea salt formations crystals", "alt": "גבישי מלח בים המלח"},
   {"id": "sabich", "file": "Liat Portal for Foodie Disorder - Open sabich (personal variation).jpg", "alt": "סביח פתוח בצלחת: חציל, ביצה קשה, תפוחי אדמה וסלט"},
   {"id": "security", "file": "Jerusalem Central Bus Station soldiers.jpg", "alt": "חיילים בתחנה המרכזית בירושלים"},
-  {"id": "hostages-square", "file": "Hostages Square 071123 01.jpg", "alt": "שלט כיכר החטופים בתל אביב, בלילה"},
+  {"id": "hostages-square", "file": "Hostages Square 071123 01.jpg", "alt": "שלט כיכר החטופים בתל אביב, בלילה", "position": "72% 50%"},
   {"id": "light-rail", "file": "Jerusalem Light Rail (Red Line) on Jaffa Road, 5 November 2025 07.jpg", "alt": "הרכבת הקלה ברחוב יפו בירושלים"}
 ]

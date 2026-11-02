@@ -2,7 +2,7 @@
 """Fetch the trip-destination photos from Wikimedia Commons.
 
 Ported from moreh-derech/tools/fetch_learning_map_photos.py. Reads tools/place_photos.json —
-a list of {id, alt} with one way to find the picture:
+a list of {id, alt, position?} with one way to find the picture (position = CSS object-position for the crop):
 
   "file":   a Commons file name;
   "wiki":   "en:<title>" — the lead image of that Wikipedia article (used only if it is a
@@ -149,7 +149,7 @@ def main() -> None:
         lock[item["id"]] = name
         width, height = Image.open(target).size
         rows.append({
-            "id": item["id"], "alt": item["alt"],
+            "id": item["id"], "alt": item["alt"], **({"position": item["position"]} if item.get("position") else {}),
             "src": f"./assets/places/{item['id']}.jpg", "width": width, "height": height,
             "author": plain(ext.get("Artist", {}).get("value", "")) or "לא צוין",
             "license": license_name, "licenseUrl": plain(ext.get("LicenseUrl", {}).get("value", "")),
