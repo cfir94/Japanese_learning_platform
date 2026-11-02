@@ -340,5 +340,159 @@ export const PLACE_PHOTOS = [
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "source": "https://commons.wikimedia.org/wiki/File:Sabich.jpg"
+  },
+  {
+    "id": "cand-sabich-a",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-sabich-a.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Gilabrand",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sabich.jpg"
+  },
+  {
+    "id": "cand-sabich-b",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-sabich-b.jpg",
+    "width": 960,
+    "height": 1280,
+    "author": "הנדב הנכון",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Kikar_HaSabich.jpg"
+  },
+  {
+    "id": "cand-sabich-d",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-sabich-d.jpg",
+    "width": 960,
+    "height": 1280,
+    "author": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Open_sabich_(personal_variation).jpg"
+  },
+  {
+    "id": "cand-security-a",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-security-a.jpg",
+    "width": 1280,
+    "height": 948,
+    "author": "Unknown authorUnknown author",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:112498_lod_-_an_old_train_station_PikiWiki_Israel.jpg"
+  },
+  {
+    "id": "cand-security-c",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-security-c.jpg",
+    "width": 800,
+    "height": 800,
+    "author": "Dr. Ondřej Havelka (cestovatel)",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:A_soldier_prays_at_the_Western_Wall_in_Jerusalem.jpg"
+  },
+  {
+    "id": "cand-security-d",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-security-d.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Yoninah",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Jerusalem_Central_Bus_Station_soldiers.jpg"
+  },
+  {
+    "id": "cand-war-a",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-war-a.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "Oren Rozen",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Hostages_Square_071123_01.jpg"
+  },
+  {
+    "id": "cand-war-b",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-war-b.jpg",
+    "width": 1280,
+    "height": 854,
+    "author": "Dror Cohen (דרור כהן)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Bring_Them_Home_demonstration_in_Tokyo,_(6_October_2024)_02.jpg"
+  },
+  {
+    "id": "cand-war-c",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-war-c.jpg",
+    "width": 719,
+    "height": 1280,
+    "author": "Chenspec",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Yellow_ribbons_in_Hostages_Square,_March_2024_73.jpg"
+  },
+  {
+    "id": "cand-war-d",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-war-d.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Yossipik",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Hostages_and_Missing_Square_Kikar_Hahatufim_12.jpg"
+  },
+  {
+    "id": "cand-society-a",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-society-a.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "מקף־עברי",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Jerusalem_Light_Rail_(Red_Line)_on_Jaffa_Road,_5_November_2025_07.jpg"
+  },
+  {
+    "id": "cand-society-b",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-society-b.jpg",
+    "width": 853,
+    "height": 1280,
+    "author": "Adam Jones from Kelowna, BC, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Street_Scene_-_Wadi_Nisnas_Neighborhood_-_Haifa_-_Israel_-_01_(5690594824).jpg"
+  },
+  {
+    "id": "cand-society-c",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-society-c.jpg",
+    "width": 853,
+    "height": 1280,
+    "author": "Adam Jones from Kelowna, BC, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Mahane_Yehuda_Market_-_Jerusalem_-_Israel_(5684024613).jpg"
+  },
+  {
+    "id": "cand-society-d",
+    "alt": "מועמדת",
+    "src": "./assets/places/cand-society-d.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "שלמה רודד",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "source": "https://commons.wikimedia.org/wiki/File:149934_acre_-_hijab_for_sale_in_the_old_city_market_PikiWiki_Israel.jpg"
   }
 ];
