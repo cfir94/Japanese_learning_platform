@@ -22,6 +22,11 @@ const known = {};
 const add = (s) => {
   if (typeof s === 'string' && KANJI.test(s)) texts.add(s);
 };
+// Japanese the site can read aloud (🔊), kana-only too: tools/build_audio.py records each one once.
+const speech = new Set();
+const say = (s) => {
+  if (typeof s === 'string' && /[ぁ-ヿ㐀-鿿]/.test(s)) speech.add(s.trim());
+};
 const addRuns = (s) => {
   for (const run of String(s ?? '').match(RUN) ?? []) add(run);
 };
@@ -34,7 +39,7 @@ for (const i of ITEMS) {
 }
 for (const x of [...PARTS.map((p) => p.title), ...WRITING.map((w) => w.he), ...SPEAKING.map((s) => s.he)]) addRuns(x);
 for (const w of WEEKS) {
-  add(w.conversation.expression); addRuns(w.conversation.title); addRuns(w.conversation.target);
+  add(w.conversation.expression); say(w.conversation.expression); addRuns(w.conversation.title); addRuns(w.conversation.target);
   addRuns(w.title); addRuns(w.vocabulary);
   for (const d of w.days) addRuns(d.topic);
 }
@@ -44,25 +49,27 @@ for (const c of CATEGORIES) add(c.ja);
 for (const e of ENTRIES) {
   add(e.ja); addRuns(e.intro);
   if (e.reading) known[e.ja] = e.reading;
-  for (const w of e.words) { add(w[0]); if (w[1]) known[w[0]] = w[1]; addRuns(w[2]); }
-  for (const s of [...e.sentences, e.ask]) { add(s[0]); known[s[0]] = s[1]; addRuns(s[2]); }
+  for (const w of e.words) { add(w[0]); say(w[0]); if (w[1]) known[w[0]] = w[1]; addRuns(w[2]); }
+  for (const s of [...e.sentences, e.ask]) { add(s[0]); say(s[0]); known[s[0]] = s[1]; addRuns(s[2]); }
 }
 Object.values(UI_JA).forEach(add);
 // The daily lesson: explanations, examples, exercises (with the filled-in sentence), focus drills,
 // the study kanji's example words, and the day's writing and speaking prompts.
 const exercise = (x) => {
   addRuns(x.he); addRuns(x.ask); add(x.base);
-  if (x.type === 'blank') { add(x.jp); x.answers.forEach(add); add(filled(x)); } else x.models.forEach(add);
+  if (x.type === 'blank') { add(x.jp); x.answers.forEach(add); add(filled(x)); say(filled(x)); } else { x.models.forEach(add); x.models.forEach(say); }
 };
 for (const t of Object.values(TEACH)) {
   t.explain.forEach(addRuns);
-  for (const [ja, he] of t.examples) { add(ja); addRuns(he); }
+  for (const [ja, he] of t.examples) { add(ja); say(ja); addRuns(he); }
   t.drills.forEach(exercise);
 }
 for (const f of FOCUS) { addRuns(f.title); f.explain.forEach(addRuns); f.drills.forEach(exercise); }
-for (const i of ITEMS) if (i.type === 'blank') add(filled(i));
-for (const [ja, he] of FOCUS_WORDS) { add(ja); addRuns(he); }
-for (const [, word, he] of Object.values(KANJI_INFO)) { add(word); addRuns(he); }
+for (const i of ITEMS) {
+  if (i.type === 'blank') { add(filled(i)); say(filled(i)); } else (i.models ?? []).forEach(say);
+}
+for (const [ja, he] of FOCUS_WORDS) { add(ja); say(ja); addRuns(he); }
+for (const [, word, he] of Object.values(KANJI_INFO)) { add(word); say(word); addRuns(he); }
 for (const w of WEEKS) {
   for (const d of w.days) {
     const patterns = dayPoints(w, d).map((pid) => POINT[pid].pattern);
@@ -82,5 +89,5 @@ for (const unit of ENGLISH_UNITS) (unit.drills ?? []).forEach((drill) => add(dri
 ENGLISH_CHECKIN.forEach((prompt) => add(prompt[1]));
 ['正美お母さん', '日本語', '日本語で', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
 
-process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known }));
+process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known, speech: [...speech].sort() }));
 

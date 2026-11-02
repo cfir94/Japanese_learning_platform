@@ -1,5 +1,6 @@
-// Plays Japanese text with the browser's own voice, when one is installed. This is a listening aid,
-// not a recording of a person, and never an assessment.
+// Plays Japanese text: a recorded file when the text has one (src/data/audio.js, made by
+// tools/build_audio.py with a natural synthetic voice), otherwise the browser's own voice. This is a
+// listening aid, not a recording of a person, and never an assessment.
 //
 // Phone browsers are fragile here: Chrome on Android drops an utterance spoken right after cancel(),
 // can get stuck "paused", and may garbage-collect an utterance nobody holds; and a phone without a
@@ -8,11 +9,17 @@
 
 import { bi } from './ui.js';
 
+// The recordings table is loaded in the background, so it never delays the page.
+let AUDIO = {};
+import('../data/audio.js').then((m) => { AUDIO = m.AUDIO; }).catch(() => {});
+let playing = null; // the <audio> element playing now
+
 let current = null; // the utterance being spoken — held so the browser cannot drop it
 const helped = new Set(); // languages we already explained, once per visit
 
 export function canSpeak() {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  if (typeof window === 'undefined') return false;
+  return 'Audio' in window || ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
 }
 
 function pickVoice(language) {
@@ -23,7 +30,19 @@ function pickVoice(language) {
 }
 
 export function speak(text, language = 'ja-JP') {
-  if (!canSpeak()) {
+  const id = language.startsWith('ja') ? AUDIO[String(text).trim()] : null;
+  if (id && 'Audio' in window) {
+    playing?.pause();
+    if ('speechSynthesis' in window && speechSynthesis.speaking) speechSynthesis.cancel();
+    playing = new Audio(`./assets/audio/${id}.mp3`);
+    playing.play().catch(() => synthesize(text, language));
+    return true;
+  }
+  return synthesize(text, language);
+}
+
+function synthesize(text, language) {
+  if (!('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)) {
     help(language);
     return false;
   }
