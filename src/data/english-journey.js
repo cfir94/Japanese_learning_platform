@@ -35,6 +35,7 @@ export const ENGLISH_JOURNEY = {
   'war': ['Talking about war', ['war','attack','hostage','safety','worry','feeling','complicated','peace','soldier','gun','weapon','train','bus','unease','notice','protect','be afraid'], 'How do you feel about it?'],
   'sabich': ['Sabich', ['eggplant','fry','hard-boiled egg','pita','tahini','amba (mango pickle)','filling','put inside'], 'What do you like to eat for breakfast?'],
   'security': ['Everyday security', ['soldier','army','military service','gun','weapon','security guard','bag check','siren','shelter','safe','dangerous','calm down'], 'What do people do in Japan when there is an earthquake?'],
+  'guiding': ['Guiding words', ['look','on our right','on our left','in front of us','remember?','about','in relation to','compared to','speaking of','for example','in other words','actually','at that time'], 'What words do Japanese tour guides often use?'],
   'culture': ['Cultural differences', ['culture','difference','be different','custom','say it directly','hold back (to be polite)','speak loudly','strict about time','wait in line','be surprised','get used to','read the room'], 'What feels most different here?'],
 };
 
