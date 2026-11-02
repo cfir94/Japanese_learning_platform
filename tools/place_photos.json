@@ -29,5 +29,21 @@
   {"id": "western-wall", "wiki": "en:Western Wall", "search": "Western Wall plaza Jerusalem", "alt": "הכותל המערבי"},
   {"id": "masada", "file": "Israel-2013-Aerial_21-Masada.jpg", "alt": "מצדה ממבט אוויר"},
   {"id": "salt", "search": "Dead Sea salt formations crystals", "alt": "גבישי מלח בים המלח"},
-  {"id": "sabich", "wiki": "en:Sabich", "search": "Sabich pita eggplant egg", "alt": "סביח בפיתה"}
+  {"id": "sabich", "wiki": "en:Sabich", "search": "Sabich pita eggplant egg", "alt": "סביח בפיתה"},
+  {"id": "cand-sabich-a", "search": "sabich sandwich", "alt": "מועמדת"},
+  {"id": "cand-sabich-b", "search": "sabich Ramat Gan", "alt": "מועמדת"},
+  {"id": "cand-sabich-c", "search": "sabich pita stand Tel Aviv", "alt": "מועמדת"},
+  {"id": "cand-sabich-d", "search": "sabich plate eggplant egg", "alt": "מועמדת"},
+  {"id": "cand-security-a", "search": "Israeli soldiers train station", "alt": "מועמדת"},
+  {"id": "cand-security-b", "search": "IDF soldiers Jerusalem street", "alt": "מועמדת"},
+  {"id": "cand-security-c", "search": "Israeli soldiers Western Wall", "alt": "מועמדת"},
+  {"id": "cand-security-d", "search": "soldiers Jerusalem central bus station", "alt": "מועמדת"},
+  {"id": "cand-war-a", "search": "Hostages Square Tel Aviv", "alt": "מועמדת"},
+  {"id": "cand-war-b", "search": "Bring Them Home yellow ribbon", "alt": "מועמדת"},
+  {"id": "cand-war-c", "search": "yellow ribbons hostages Israel", "alt": "מועמדת"},
+  {"id": "cand-war-d", "search": "Hostages and Missing Families Forum square", "alt": "מועמדת"},
+  {"id": "cand-society-a", "search": "Jerusalem Light Rail Jaffa Road", "alt": "מועמדת"},
+  {"id": "cand-society-b", "search": "Wadi Nisnas Haifa", "alt": "מועמדת"},
+  {"id": "cand-society-c", "search": "Mahane Yehuda market people", "alt": "מועמדת"},
+  {"id": "cand-society-d", "search": "Acre old city market", "alt": "מועמדת"}
 ]
