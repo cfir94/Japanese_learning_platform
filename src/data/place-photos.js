@@ -329,5 +329,16 @@ export const PLACE_PHOTOS = [
     "license": "CC0",
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "source": "https://commons.wikimedia.org/wiki/File:2010-06-17_14-43-40_Israel_Dead_Sea_JH_(52794253055).jpg"
+  },
+  {
+    "id": "sabich",
+    "alt": "סביח בפיתה",
+    "src": "./assets/places/sabich.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Gilabrand",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sabich.jpg"
   }
 ];
