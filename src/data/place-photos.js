@@ -332,13 +332,46 @@ export const PLACE_PHOTOS = [
   },
   {
     "id": "sabich",
-    "alt": "סביח בפיתה",
+    "alt": "סביח פתוח בצלחת: חציל, ביצה קשה, תפוחי אדמה וסלט",
     "src": "./assets/places/sabich.jpg",
+    "width": 960,
+    "height": 1280,
+    "author": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Open_sabich_(personal_variation).jpg"
+  },
+  {
+    "id": "security",
+    "alt": "חיילים בתחנה המרכזית בירושלים",
+    "src": "./assets/places/security.jpg",
     "width": 1280,
     "height": 960,
-    "author": "Gilabrand",
+    "author": "Yoninah",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "source": "https://commons.wikimedia.org/wiki/File:Sabich.jpg"
+    "source": "https://commons.wikimedia.org/wiki/File:Jerusalem_Central_Bus_Station_soldiers.jpg"
+  },
+  {
+    "id": "hostages-square",
+    "alt": "שלט כיכר החטופים בתל אביב, בלילה",
+    "src": "./assets/places/hostages-square.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "Oren Rozen",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Hostages_Square_071123_01.jpg"
+  },
+  {
+    "id": "light-rail",
+    "alt": "הרכבת הקלה ברחוב יפו בירושלים",
+    "src": "./assets/places/light-rail.jpg",
+    "width": 1280,
+    "height": 853,
+    "author": "מקף־עברי",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Jerusalem_Light_Rail_(Red_Line)_on_Jaffa_Road,_5_November_2025_07.jpg"
   }
 ];
