@@ -5,6 +5,7 @@ import { GRAMMAR, LESSONS } from '../data/grammar.js';
 import { ITEMS, PARTS, WRITING, SPEAKING, itemsOfPart } from '../data/placement.js';
 import { PLAN, WEEKS, ROUTINE, MEETING, LESSON_DUE } from '../data/plan.js';
 import { addDays, daysBetween } from '../lib/dates.js';
+import { practiceByPoint, practiceStatus } from './lesson.js';
 
 export const STATUS = {
   known: { label: 'שולט', rank: 5 },
@@ -95,9 +96,18 @@ export function pointStatuses(events) {
       }
     }
   }
-  // Later practice outside the test overrides nothing yet; it will add its own evidence here.
+  // Practice in the daily lessons is the main evidence; the placement test (if any) is the fallback.
+  const practice = practiceByPoint(events);
   const out = {};
-  for (const [pid, results] of byPoint) out[pid] = combine(results, free.get(pid) ?? []);
+  for (const [pid, results] of byPoint) {
+    const freeVerdicts = free.get(pid) ?? [];
+    if (!practice.has(pid)) {
+      out[pid] = combine(results, freeVerdicts);
+      continue;
+    }
+    const status = practiceStatus(practice.get(pid));
+    out[pid] = status === 'known' && freeVerdicts.includes('error') && !freeVerdicts.includes('ok') ? 'partial' : status;
+  }
   return out;
 }
 

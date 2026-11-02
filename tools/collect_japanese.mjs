@@ -9,10 +9,13 @@ import { ITEMS, PARTS, WRITING, SPEAKING } from '../src/data/placement.js';
 import { WEEKS, MILESTONES, AFTER_MARCH } from '../src/data/plan.js';
 import { ENTRIES, CATEGORIES } from '../src/data/journey.js';
 import { UI_JA } from '../src/data/ui-ja.js';
-import { ENGLISH_UNITS, ENGLISH_LABELS, ENGLISH_CHECKIN } from '../src/data/english.js';
+import { ENGLISH_UNITS, ENGLISH_PARTS, ENGLISH_LABELS, ENGLISH_CHECKIN } from '../src/data/english.js';
+import { TEACH, FOCUS, FOCUS_WORDS, KANJI_INFO, filled } from '../src/data/lessons.js';
+import { POINT } from '../src/data/grammar.js';
+import { dayPoints, speakingTask, writingPrompt } from '../src/logic/lesson.js';
 
 const KANJI = /[㐀-鿿々]/;
-const RUN = /[　-ヿ㐀-鿿！-｠]+(?:\s+[　-ヿ㐀-鿿！-｠]+)*/gu;
+const RUN = /[　-ヿ㐀-鿿！-｠]+(?:[\s()→/+=-]*[　-ヿ㐀-鿿！-｠]+)*/gu; // same as rich() in src/lib/ui.js
 const texts = new Set();
 const known = {};
 
@@ -45,6 +48,28 @@ for (const e of ENTRIES) {
   for (const s of [...e.sentences, e.ask]) { add(s[0]); known[s[0]] = s[1]; addRuns(s[2]); }
 }
 Object.values(UI_JA).forEach(add);
+// The daily lesson: explanations, examples, exercises (with the filled-in sentence), focus drills,
+// the study kanji's example words, and the day's writing and speaking prompts.
+const exercise = (x) => {
+  addRuns(x.he); addRuns(x.ask); add(x.base);
+  if (x.type === 'blank') { add(x.jp); x.answers.forEach(add); add(filled(x)); } else x.models.forEach(add);
+};
+for (const t of Object.values(TEACH)) {
+  t.explain.forEach(addRuns);
+  for (const [ja, he] of t.examples) { add(ja); addRuns(he); }
+  t.drills.forEach(exercise);
+}
+for (const f of FOCUS) { addRuns(f.title); f.explain.forEach(addRuns); f.drills.forEach(exercise); }
+for (const i of ITEMS) if (i.type === 'blank') add(filled(i));
+for (const [ja, he] of FOCUS_WORDS) { add(ja); addRuns(he); }
+for (const [, word, he] of Object.values(KANJI_INFO)) { add(word); addRuns(he); }
+for (const w of WEEKS) {
+  for (const d of w.days) {
+    const patterns = dayPoints(w, d).map((pid) => POINT[pid].pattern);
+    addRuns(writingPrompt(patterns));
+    addRuns(speakingTask(w, d, [], patterns).he);
+  }
+}
 for (const unit of ENGLISH_UNITS) {
   add(unit.ja); add(unit.goal);
   unit.words.forEach((word) => add(word[1]));
@@ -52,8 +77,10 @@ for (const unit of ENGLISH_UNITS) {
   unit.prompts.forEach((prompt) => add(prompt[0]));
 }
 Object.values(ENGLISH_LABELS).forEach((label) => add(label[1]));
+ENGLISH_PARTS.forEach((part) => add(part.ja));
+for (const unit of ENGLISH_UNITS) (unit.drills ?? []).forEach((drill) => add(drill[2]));
 ENGLISH_CHECKIN.forEach((prompt) => add(prompt[1]));
-['正美お母さん', '日本語', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
+['正美お母さん', '日本語', '日本語で', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
 
 process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known }));
 

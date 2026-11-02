@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { cleanSnapshot, ProgressRoom } from '../worker/src/pair-room.js';
-import { ENGLISH_UNITS, ENGLISH_CHECKIN } from '../src/data/english.js';
+import { ENGLISH_UNITS, ENGLISH_PARTS, ENGLISH_CHECKIN } from '../src/data/english.js';
 import { ENGLISH_JOURNEY } from '../src/data/english-journey.js';
 import { ENTRIES } from '../src/data/journey.js';
 import { englishProgress } from '../src/logic/english.js';
@@ -9,12 +9,20 @@ import { pointStatuses } from '../src/logic/progress.js';
 import worker from '../worker/src/index.js';
 
 test('the English path and every journey vocabulary set are complete', () => {
-  assert.equal(ENGLISH_UNITS.length, 12);
-  assert.equal(new Set(ENGLISH_UNITS.map((unit) => unit.id)).size, 12);
+  assert.equal(ENGLISH_UNITS.length, 16);
+  assert.equal(new Set(ENGLISH_UNITS.map((unit) => unit.id)).size, ENGLISH_UNITS.length);
   assert.equal(ENGLISH_CHECKIN.length, 5);
   for (const unit of ENGLISH_UNITS) {
+    assert.match(unit.id, /^en-\d{2}$/);
+    assert.ok(Number(unit.id.slice(3)) >= 13, `${unit.id}: en-01…en-12 are retired`);
+    assert.ok(ENGLISH_PARTS.some((part) => part.id === unit.part), unit.id);
     assert.ok(unit.ja && unit.goal && unit.prompts.length >= 2 && unit.examples.length >= 2);
     assert.ok(unit.words.every((word) => word.length === 2 && word[0] && word[1]));
+    assert.ok(unit.drills.length >= 3, unit.id);
+    for (const [sentence, answers, ja] of unit.drills) {
+      assert.equal(sentence.split('___').length, 2, `${unit.id}: ${sentence}`);
+      assert.ok(answers.length && ja, `${unit.id}: ${sentence}`);
+    }
   }
   for (const entry of ENTRIES) {
     const [name, words, question] = ENGLISH_JOURNEY[entry.id];
@@ -26,15 +34,16 @@ test('the English path and every journey vocabulary set are complete', () => {
 
 test('English practice keeps Japanese records separate and self-checking is not mastery', () => {
   const events = [
-    { kind: 'english-attempt', data: { unit: 'en-01', answer: 'personal answer', usedHelp: true, assessment: 'pending' } },
-    { kind: 'english-unit', data: { unit: 'en-01', done: true } },
-    { kind: 'english-unit', data: { unit: 'en-01', done: false } },
-    { kind: 'english-vocab', data: { word: 'en-01:family', known: true } },
+    { kind: 'english-attempt', data: { unit: 'en-13', answer: 'personal answer', usedHelp: true, assessment: 'pending' } },
+    { kind: 'english-unit', data: { unit: 'en-13', done: true } },
+    { kind: 'english-unit', data: { unit: 'en-13', done: false } },
+    { kind: 'english-vocab', data: { word: 'en-13:and', known: true } },
+    { kind: 'english-drill', data: { unit: 'en-13', item: 'en-13-d0', answer: 'but', correct: true } },
     { kind: 'vocab', data: { id: 'unrelated', known: true } },
   ];
   const result = englishProgress(events);
   assert.equal(result.attempts, 1);
-  assert.equal(result.units['en-01'].done, false);
+  assert.equal(result.units['en-13'].done, false);
   assert.equal(result.words, 1);
   assert.deepEqual(pointStatuses(events), pointStatuses([]));
 });

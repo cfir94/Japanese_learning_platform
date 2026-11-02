@@ -10,16 +10,18 @@ export function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
 
-// Escapes Hebrew text that may contain Japanese and marks each Japanese run, so the browser
-// lays it out left-to-right inside the right-to-left line.
-const JAPANESE_RUN = /[　-ヿ㐀-鿿！-｠]+(?:\s+[　-ヿ㐀-鿿！-｠]+)*/gu;
+// Escapes Hebrew text that may contain Japanese and isolates each Japanese run, so the browser
+// lays it out left-to-right inside the right-to-left line. Punctuation between Japanese characters
+// (spaces, brackets, arrows, slashes) stays inside the run, so "高い→高かった" keeps its order.
+// tools/collect_japanese.mjs uses the same pattern.
+const JAPANESE_RUN = /[　-ヿ㐀-鿿！-｠]+(?:[\s()→/+=-]*[　-ヿ㐀-鿿！-｠]+)*/gu;
 
 // Number and date ranges stay left-to-right ("8–12", "11–18.3"); otherwise RTL shows "12–8".
 const RANGE = /\d+(?:\.\d+)*\s?[–-]\s?\d+(?:\.\d+)*/g;
 
 export function rich(value) {
   return esc(value)
-    .replace(JAPANESE_RUN, (run) => `<span lang="ja">${jp(run)}</span>`)
+    .replace(JAPANESE_RUN, (run) => `<span lang="ja" dir="ltr">${jp(run)}</span>`)
     .replace(RANGE, (run) => `<span dir="ltr">${run}</span>`);
 }
 

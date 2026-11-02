@@ -10,13 +10,14 @@ import * as test from './views/test.js';
 import * as journey from './views/journey.js';
 import * as login from './views/login.js';
 import * as english from './views/english.js';
+import * as lesson from './views/lesson.js';
 import { learner, selectLearner } from './lib/learner.js';
 import { pairState, openPair, subscribePair } from './lib/partners.js';
 import { partnerCard, bindPartner } from './lib/partner-view.js';
 
 const root = document.getElementById('app');
 const syncButton = document.getElementById('sync');
-const VIEWS = { '': home, plan, journey, test, results: test, join: english };
+const VIEWS = { '': home, lesson, plan, journey, test, results: test, join: english };
 
 let cleanup = null;
 let current = null;
@@ -34,13 +35,13 @@ function render({ scroll = true } = {}) {
   const mode = learner();
   document.documentElement.dir = mode === 'masami' ? 'ltr' : 'rtl';
   document.documentElement.lang = mode === 'masami' ? 'en' : 'he';
-  document.querySelector('[data-learner="kfir"]').innerHTML = `<b>כפיר · Kfir</b><span lang="ja">${jp('日本語')}</span>`;
+  document.querySelector('[data-learner="kfir"]').innerHTML = `<b>כפיר · Cfir</b><span lang="ja">フィル · ${jp('日本語')}</span>`;
   document.querySelector('[data-learner="masami"]').innerHTML = `<b lang="ja">${jp('正美お母さん')} · Masami</b><span>English</span>`;
-  const navKeys = { home: 'navToday', plan: 'navPlan', journey: 'navJourney', test: 'navTest' };
+  const navKeys = { home: 'navToday', lesson: 'navLesson', plan: 'navPlan', journey: 'navJourney' };
   document.querySelectorAll('[data-learner]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.learner === mode)));
   for (const a of document.querySelectorAll('[data-nav]')) {
     a.innerHTML = bi(navKeys[a.dataset.nav], { stack: true });
-    const active = (a.dataset.nav === 'home' && route.name === '') || a.dataset.nav === route.name || (a.dataset.nav === 'test' && route.name === 'results');
+    const active = (a.dataset.nav === 'home' && route.name === '') || a.dataset.nav === route.name;
     a.classList.toggle('active', active);
     if (active) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');

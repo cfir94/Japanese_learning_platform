@@ -6,7 +6,6 @@ import { partnerCard, bindPartner } from '../lib/partner-view.js';
 import { israelDay, weekday, shortDate } from '../lib/dates.js';
 import { esc, rich, jp, bi, marks, jaWeekday, kanjiList, statusBar, legend, countStatuses } from '../lib/ui.js';
 import { WEEKS, PLAN } from '../data/plan.js';
-import { PARTS } from '../data/placement.js';
 import { LESSONS, GRAMMAR } from '../data/grammar.js';
 import { buildBrief, parseSummary } from '../logic/brief.js';
 import { openingPair, memoriesStrip, banner, postcards } from '../lib/photos.js';
@@ -14,7 +13,7 @@ import { CATEGORIES, sentencesFor } from '../data/journey.js';
 import { placeOfWeek } from '../data/places.js';
 import {
   findDay, tasksOfDay, taskState, dayProgress, pace, pointStatuses, marchScope, expectedPoints,
-  placementState, partProgress, countdown,
+  countdown,
 } from '../logic/progress.js';
 
 export const live = true;
@@ -29,7 +28,6 @@ export function render(root) {
     ${syncNotice()}
     ${hero(today)}
     ${partnerCard()}
-    ${placementCard(events)}
     ${todayCard(today, tasks)}
     ${memoriesStrip(today)}
     ${weekCard(today, tasks)}
@@ -149,25 +147,6 @@ function syncNotice() {
     <p>כדי שיישמר בענן צריך להריץ פעם אחת את <code>supabase/schema.sql</code> ב־Supabase. ההוראות ב־README.</p></section>`;
 }
 
-function placementCard(events) {
-  const state = placementState(events);
-  const progress = PARTS.map((p) => partProgress(p.id, state));
-  const doneParts = progress.filter((p) => p.done >= p.total).length;
-  if (doneParts === PARTS.length) return '';
-  const started = progress.some((p) => p.done > 0);
-  return `<section class="card notice">
-    <h2><span class="ico">📍</span> ${bi('firstStep')}</h2>
-    <div class="row between wrap">
-      <div>
-        <div class="title">${bi('placement', { stack: true })}</div>
-        <p class="lead">דקדוק משיעור 8 עד 23, כתיבה ודיבור. לפיו נדע מה כבר יושב ומה לא, ונכייל את התוכנית.</p>
-      </div>
-      <a class="btn accent" href="#/test">${bi(started ? 'resume' : 'start')}</a>
-    </div>
-    <p class="small muted num" style="margin:10px 0 0">${doneParts} מתוך ${PARTS.length} חלקים הושלמו</p>
-  </section>`;
-}
-
 const ICONS = { words: '🗂️', kanji: '漢', grammar: '✍️', input: '🎧', speaking: '🗣️', meeting: '☕' };
 
 function todayCard(today, tasks) {
@@ -185,6 +164,7 @@ function todayCard(today, tasks) {
       <span class="eyebrow num">שבוע ${week.week} מתוך ${WEEKS.length} <span lang="ja">${marks(`第{だい}${week.week}週{しゅう}`)}</span></span>
     </div>
     <div class="today-topic">${rich(day.topic)}</div>
+    <div class="actions" style="margin:4px 0 10px"><a class="btn primary" href="#/lesson">${bi('toLesson')} ←</a></div>
     ${journeyExample(week, today)}
     <ul class="tasks">
       ${list.map((t) => `<li><label class="task ${tasks[t.id] ? 'done' : ''}">

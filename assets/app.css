@@ -483,10 +483,54 @@ rt { font-size: .5em; font-weight: 400; color: var(--sea); letter-spacing: 0; op
 .learner-switcher { display: flex; gap: 8px; width: 100%; justify-content: center; padding-block: 4px 8px; }
 .learner-switcher button { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line, #b4a99b77); border-radius: 999px; padding: 8px 16px; background: transparent; color: inherit; cursor: pointer; font: inherit; font-size: 13px; }
 .learner-switcher button[aria-pressed="true"] { background: var(--accent, #48766c); border-color: transparent; color: white; }
-.learner-switcher button span { font-size: 12px; opacity: .85; }
+.learner-switcher button span { font-size: 12px; opacity: .85; white-space: nowrap; }
 .partner-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .partner-stats > div { border: 1px solid var(--line, #b4a99b55); border-radius: 14px; padding: 14px; overflow-wrap: anywhere; }
 .partner-stats p { margin: 8px 0 0; }
 html[lang="en"] .bi-ja { font-size: .85em; }
 html[lang="en"] textarea.answer { text-align: left; }
 @media (max-width: 540px) { .learner-switcher button { padding: 8px 10px; gap: 6px; font-size: 12px; } .partner-stats { gap: 8px; } .partner-stats > div { padding: 10px; } }
+
+/* ── Daily lesson ───────────────────────────────────────────────────────── */
+.steps { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.step { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; }
+.step small { font-size: 12px; opacity: .7; }
+.step.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.step.on .bi-ja { color: inherit; opacity: .75; }
+.step.done:not(.on) { border-color: color-mix(in srgb, var(--known) 55%, var(--line)); color: var(--known); }
+.lesson-page .runner { min-height: 0; }
+.lesson-page .chips { margin-top: 10px; }
+.center { text-align: center; }
+.center .actions { justify-content: center; }
+.teach { border-top: 1px solid var(--line); padding: 10px 0; }
+.teach:first-of-type { border-top: 0; }
+.teach > summary { cursor: pointer; font-weight: 700; }
+.teach > summary .jp { font-size: 18px; }
+.explain { margin: 8px 0; padding-inline-start: 20px; line-height: 1.7; }
+.explain li + li { margin-top: 4px; }
+.feedback { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--sand); }
+.feedback.ok { background: color-mix(in srgb, var(--known) 14%, var(--card)); }
+.feedback.miss { background: color-mix(in srgb, var(--gap) 12%, var(--card)); }
+.feedback p { margin: 4px 0; }
+.feedback .jp { font-family: var(--jp); font-size: 19px; }
+.flash { text-align: center; padding: 26px 8px 10px; }
+.flash-ja { font-family: var(--jp); font-size: 34px; line-height: 2; }
+.flash-kanji { font-family: var(--jp); font-size: 72px; line-height: 1.2; }
+.flash-read { font-family: var(--jp); font-size: 18px; color: var(--muted); margin: 4px 0; }
+.flash-he { font-size: 19px; margin: 6px 0; }
+.flash .jp { font-family: var(--jp); font-size: 20px; }
+.hide-rt rt { visibility: hidden; }
+.kanji-week { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; font-family: var(--jp); font-size: 30px; margin: 10px 0; }
+.kanji-week rt { font-size: 11px; }
+.sentence.listen .row { gap: 6px; flex-wrap: wrap; }
+.sentence.listen .s-ja { font-family: var(--jp); font-size: 20px; margin: 8px 0 2px; }
+.writing { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.writing > summary { cursor: pointer; }
+
+/* English drills (Masami) */
+.part-title { margin: 10px 4px 0; font-size: 17px; }
+.drill { border-top: 1px solid var(--line); padding-top: 10px; }
+.drill:first-child { border-top: 0; padding-top: 0; }
+.drill .expr { font-family: var(--font); }
+.drill .gap { width: 7.5em; margin: 0 .3em; padding: 4px 8px; font: inherit; border: 0; border-bottom: 2px solid var(--accent); background: transparent; color: var(--ink); text-align: center; }
+.drill .gap:focus { outline: none; border-bottom-color: var(--sea); }

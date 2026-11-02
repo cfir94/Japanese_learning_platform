@@ -33,6 +33,9 @@ export const ENGLISH_JOURNEY = {
   'history': ['Jewish history', ['history','temple','king','palace','festival','tradition','approximately','briefly'], 'Could you tell me a little about its history?'],
   'society': ['Israeli society', ['society','culture','immigrant','of Arab background','language','live','opinion','way of thinking'], 'What is everyday life like here?'],
   'war': ['Talking about war', ['war','attack','hostage','safety','worry','feeling','complicated','peace','soldier','gun','weapon','train','bus','unease','notice','protect','be afraid'], 'How do you feel about it?'],
+  'sabich': ['Sabich', ['eggplant','fry','hard-boiled egg','pita','tahini','amba (mango pickle)','filling','put inside'], 'What do you like to eat for breakfast?'],
+  'security': ['Everyday security', ['soldier','army','military service','gun','weapon','security guard','bag check','siren','shelter','safe','dangerous','calm down'], 'What do people do in Japan when there is an earthquake?'],
+  'culture': ['Cultural differences', ['culture','difference','be different','custom','say it directly','hold back (to be polite)','speak loudly','strict about time','wait in line','be surprised','get used to','read the room'], 'What feels most different here?'],
 };
 
 export const ENGLISH_CATEGORIES = { places: ['Places','場所'], food: ['Food','食べ物'], activities: ['Activities','体験'], topics: ['Conversations','話題'] };

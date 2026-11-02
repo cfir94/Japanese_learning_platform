@@ -1,6 +1,7 @@
 import { pairState, createPair, leavePair, syncPair, inviteLink, subscribePair } from './partners.js';
 import { bi, marks } from './ui.js';
 import { learner } from './learner.js';
+import { ENGLISH_UNITS } from '../data/english.js';
 
 export function partnerCard() {
   const jp = pairState.snapshots.kfir;
@@ -9,8 +10,8 @@ export function partnerCard() {
   return `<section class="card" id="couple-progress">
     <h2>🌱 ${bi('pairTitle')}</h2><p class="small muted">${bi('pairPrivacy')}</p>
     <div class="partner-stats">
-      <div><b>כפיר · Kfir</b><p class="small">${bi('pairJapanese')}</p>${jp ? `<p class="num">${jp.pace.doneDays} / ${jp.pace.totalDays} ${bi('daysDone')}<br>${Math.round(jp.pace.minutesDone / 6) / 10} ${bi('pairHours')}</p>` : `<p class="small muted">${bi('pairNoProgress')}</p>`}</div>
-      <div><b lang="ja">${marks('正美{まさみ}お母{かあ}さん')} · Masami</b><p class="small">${bi('pairEnglish')}</p>${en ? `<p class="num">${Object.values(en.units).filter((u) => u.done).length} / 12 ${bi('pairUnits')}<br>${en.attempts} ${bi('pairAttempts')} · ${en.words} ${bi('pairWords')}</p>` : `<p class="small muted">${bi('pairNoProgress')}</p>`}</div>
+      <div><b>כפיר · Cfir · <span lang="ja">フィル</span></b><p class="small">${bi('pairJapanese')}</p>${jp ? `<p class="num">${jp.pace.doneDays} / ${jp.pace.totalDays} ${bi('daysDone')}<br>${Math.round(jp.pace.minutesDone / 6) / 10} ${bi('pairHours')}</p>` : `<p class="small muted">${bi('pairNoProgress')}</p>`}</div>
+      <div><b lang="ja">${marks('正美{まさみ}お母{かあ}さん')} · Masami</b><p class="small">${bi('pairEnglish')}</p>${en ? `<p class="num">${Object.values(en.units).filter((u) => u.done).length} / ${ENGLISH_UNITS.length} ${bi('pairUnits')}<br>${en.attempts} ${bi('pairAttempts')} · ${en.words} ${bi('pairWords')}</p>` : `<p class="small muted">${bi('pairNoProgress')}</p>`}</div>
     </div>
     <p class="small muted">${bi(pairState.state === 'offline' ? 'pairOffline' : closed ? 'pairClosed' : pairState.connected ? 'pairConnected' : pairState.code ? 'pairWaiting' : 'pairSetup')}</p>
     <div class="actions">${pairState.code && !closed ? `<button class="btn" data-pair-copy>${bi('pairCopy')}</button><button class="btn quiet" data-pair-refresh>${bi('pairRefresh')}</button><button class="btn quiet small" data-pair-leave>${bi('pairDisconnect')}</button>` : learner() === 'kfir' ? `<button class="btn" data-pair-create>${bi('pairCreate')}</button>` : ''}</div>

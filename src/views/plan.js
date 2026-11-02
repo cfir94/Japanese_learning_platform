@@ -84,7 +84,7 @@ function weekNode(week, today, tasks, side) {
         ${week.days.map((d) => {
           const ok = dayDone(week, d, tasks);
           const mark = ok ? '<span class="ok">✓</span>' : d.date < today ? '<span class="miss">!</span>' : '';
-          return `<li class="${d.date === today ? 'today' : ''}"><span class="d">${rich(d.label)} ${shortDate(d.date)} ${mark}</span><span>${rich(d.topic)}</span></li>`;
+          return `<li class="${d.date === today ? 'today' : ''}"><span class="d">${rich(d.label)} ${shortDate(d.date)} ${mark}</span><a href="#/lesson/${d.date}">${rich(d.topic)}</a></li>`;
         }).join('')}
       </ul>
     </details>
