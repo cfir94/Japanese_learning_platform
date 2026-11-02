@@ -2,6 +2,7 @@
 export const ENGLISH_JOURNEY = {
   'jerusalem': ['Jerusalem', ['old city','city wall','holy place','religion','Western Wall','Dome of the Rock','Church of the Holy Sepulchre','market'], 'What would you like to see in Jerusalem?'],
   'dead-sea': ['The Dead Sea', ['salt','float','mud','below sea level','sunscreen','sting','low','salty','sink','does not sink'], 'Would you like to try floating?'],
+  'masada': ['Masada', ['Roman Empire','revolt','fortress','palace','siege','siege ramp','surrender','slave, slavery','freedom','courage, heroism','hero','mass suicide','oath','sunrise'], 'Is there a place in Japan with a sad history like this?'],
   'timna': ['Timna', ['desert','rock','red','copper mine','pillar','hot','hat','walk','on the way to'], 'Have you ever been to a desert?'],
   'eilat': ['Eilat', ['Red Sea','south','coral','fish','beach','swim','warm','tax-free'], 'Would you like to go swimming?'],
   'ramon': ['Ramon Crater', ['crater','rock layer','meteorite','star','view','erode','wind','jacket'], 'Shall we look at the stars?'],
