@@ -355,6 +355,7 @@ export const PLACE_PHOTOS = [
   {
     "id": "hostages-square",
     "alt": "שלט כיכר החטופים בתל אביב, בלילה",
+    "position": "72% 50%",
     "src": "./assets/places/hostages-square.jpg",
     "width": 1280,
     "height": 853,
