@@ -26,6 +26,15 @@
   --radius: 18px;
   --font: 'Heebo', system-ui, 'Segoe UI', Arial, sans-serif;
   --jp: 'Zen Maru Gothic', 'Noto Sans JP', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
+  --study-front: #f0e9de;
+  --study-back: #e4eee8;
+  --study-border: #c5b8a7;
+  --study-ink: #252e35;
+  --study-muted: #535e65;
+  --study-ruby: #235b70;
+  --study-shadow: 0 10px 28px #352c201a;
+  --study-action-bg: #b43e2f;
+  --study-action-ink: #ffffff;
   color-scheme: light;
 }
 
@@ -52,6 +61,15 @@
     --untested: #4a5272;
     --pending: #bdb0f2;
     --shadow: 0 1px 2px rgba(10, 12, 30, .25), 0 10px 28px rgba(10, 12, 30, .22);
+    --study-front: #25324a;
+    --study-back: #263d3c;
+    --study-border: #71829c;
+    --study-ink: #f5f3ed;
+    --study-muted: #d1dae4;
+    --study-ruby: #b8e1f0;
+    --study-shadow: 0 10px 28px #0c14273d;
+    --study-action-bg: #efad95;
+    --study-action-ink: #17243a;
     color-scheme: dark;
   }
 }
@@ -421,7 +439,9 @@ rt { font-size: .5em; font-weight: 400; color: var(--sea); letter-spacing: 0; op
 .study-tabs { margin: 0 0 16px; flex-wrap: wrap; overflow: visible; }
 .study-tabs button { font: inherit; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; background: var(--card); color: var(--ink); }
 .study-tabs button[aria-selected="true"], .study-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.study-tabs button:focus-visible, .topic-flashcard:focus-visible { outline: 3px solid #bd6e8b; outline-offset: 4px; }
+.study-tabs button:focus-visible, .topic-flashcard:focus-visible { outline: 3px solid var(--sea); outline-offset: 4px; }
+.study-tabs button[aria-selected="true"] .bi-ja, .study-tabs button[aria-pressed="true"] .bi-ja { color: inherit; opacity: .95; }
+.study-tabs button[aria-selected="true"] rt, .study-tabs button[aria-pressed="true"] rt { color: inherit; opacity: 1; }
 .guide-toolbar { gap: 14px; flex-wrap: wrap; }
 .guide-toolbar .tabs { margin: 0; }
 .guide-paragraph { font-size: 20px; line-height: 2.4; padding: 20px 0 26px; overflow-wrap: anywhere; }
@@ -431,20 +451,47 @@ rt { font-size: .5em; font-weight: 400; color: var(--sea); letter-spacing: 0; op
 .guide-listen li { padding: 12px 0; line-height: 2.2; }
 .guide-notes dt { margin-top: 14px; font-size: 19px; }
 .guide-notes dd { margin: 6px 0 16px; line-height: 1.9; }
-.topic-card-photo { width: 100%; max-height: 150px; object-fit: cover; border-radius: 15px; display: block; }
-.topic-photo-note { margin: 5px 0 14px; }
-.topic-flashcard { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; width: 100%; min-height: 230px; padding: 32px 20px; border: 1px solid #dfc3ce; border-radius: 22px; background: linear-gradient(145deg,#fffaf4,#f9e9ed); color: var(--ink); cursor: pointer; font: inherit; box-shadow: 0 8px 24px #8749650b; overflow-wrap: anywhere; }
-.topic-flashcard.revealed { background: linear-gradient(145deg,#fffaf4,#e8f3f0); border-color: #b4d0c4; }
-.topic-card-front { display: block; font-size: clamp(25px,5vw,38px); line-height: 2; }
-.topic-card-front[lang="ja"], .topic-card-back[lang="ja"] { font-family: var(--jp); }
-.topic-card-back { display: block; font-size: 22px; line-height: 1.8; }
-.topic-flashcard rt { font-size: .45em; }
+.topic-progress p { margin: 0 0 8px; }
+.topic-progress > .row { flex-wrap: wrap; }
+.topic-progress progress { width: 100%; height: 6px; border: 0; border-radius: 20px; overflow: hidden; background: var(--line); accent-color: var(--sea); }
+.topic-progress progress::-webkit-progress-bar { background: var(--line); }
+.topic-progress progress::-webkit-progress-value { background: var(--sea); border-radius: 20px; }
+.topic-progress progress::-moz-progress-bar { background: var(--sea); border-radius: 20px; }
+.topic-kind { font-size: 12px; color: var(--sea); background: var(--sea-soft); padding: 4px 10px; border-radius: 999px; }
+.topic-options { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 14px 0; }
+.topic-options .btn { border: 1px solid var(--line); padding: 7px 12px; font-size: 12px; }
+.topic-options .bi { display: flex; gap: 5px; flex-wrap: wrap; }
+.topic-options .bi-ja { margin: 0; opacity: 1; }
+.topic-flashcard { display: block; width: 100%; padding: 0; border: 0; border-radius: 22px; background: transparent; color: var(--study-ink); cursor: pointer; font: inherit; perspective: 1300px; -webkit-tap-highlight-color: transparent; overflow-wrap: anywhere; touch-action: manipulation; }
+.topic-flip-inner { display: grid; width: 100%; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.2,.7,.25,1); }
+.topic-flashcard.revealed .topic-flip-inner { transform: rotateY(180deg); }
+.topic-face { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-width: 0; min-height: 310px; padding: 32px 24px; border: 1px solid var(--study-border); border-radius: 22px; background: var(--study-front); box-shadow: var(--study-shadow); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.topic-face-front { transform: rotateY(0deg); }
+.topic-face-back { transform: rotateY(180deg); background: var(--study-back); }
+.topic-face[aria-hidden="true"] { pointer-events: none; }
+.topic-card-front { display: block; font-size: clamp(28px,4vw,42px); font-weight: 600; line-height: 2.15; color: var(--study-ink); }
+.topic-card-front[lang="ja"], .topic-card-back[lang="ja"], .topic-answer-ja { font-family: var(--jp); }
+.topic-card-back { display: flex; flex-direction: column; gap: 14px; font-size: 25px; font-weight: 500; line-height: 1.8; color: var(--study-ink); }
+.topic-answer-ja { font-size: clamp(28px,4vw,40px); line-height: 2; }
+.topic-answer-original { font-size: 18px; line-height: 2; color: var(--study-muted); }
+.topic-flashcard rt { font-size: .48em; font-weight: 500; color: var(--study-ruby); opacity: 1; }
+.topic-flashcard .bi-ja { color: inherit; opacity: 1; }
+.topic-flip-hint, .topic-answer-label { color: var(--study-muted); font-size: 12px; font-weight: 500; }
+.topic-answer-label { margin-bottom: 6px; }
+.picture-first .topic-face-front { padding: 14px 14px 20px; gap: 10px; }
+.topic-object-photo { display: block; width: 100%; height: clamp(185px,28vw,270px); object-fit: cover; border-radius: 12px; background: var(--study-front); }
+.topic-picture-prompt { font-size: 16px; font-weight: 600; color: var(--study-ink); }
+.topic-card-footer { flex-wrap: wrap; gap: 10px; min-height: 55px; margin-top: 9px; }
+.topic-card-footer .btn { margin-inline-start: auto; }
+.topic-visual-credit { color: var(--muted); }
 .topic-ratings { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 18px; }
 .topic-ratings .btn { white-space: normal; justify-content: center; }
+.topic-ratings .btn.primary, .topic-round-end .btn.primary { background: var(--study-action-bg); color: var(--study-action-ink); border-color: var(--study-action-bg); }
+.topic-ratings .btn.primary .bi-ja, .topic-ratings .btn.primary rt { color: inherit; opacity: 1; }
 .topic-example { font: 19px/2.2 var(--jp); }
 .topic-round-end { padding: 30px 10px; min-height: 250px; }
-@media (max-width:480px) { .guide-paragraph { font-size: 18px; line-height: 2.5; } .topic-ratings { grid-template-columns: 1fr; } .study-tabs button { padding: 8px 12px; } }
-@media (prefers-reduced-motion:reduce) { .topic-flashcard { transition: none; } }
+@media (max-width:480px) { .guide-paragraph { font-size: 18px; line-height: 2.5; } .topic-ratings { grid-template-columns: 1fr; } .study-tabs button { padding: 8px 12px; } .topic-face { padding: 26px 16px; min-height: 300px; } .topic-picture-prompt .bi { display: flex; flex-direction: column; align-items: center; gap: 2px; } .topic-options { gap: 7px; } }
+@media (prefers-reduced-motion:reduce) { .topic-flip-inner { transition: none; } }
 .bi-ja { direction: ltr; unicode-bidi: isolate; font-family: var(--jp); color: var(--muted); font-size: .86em; font-weight: 500; margin-inline-start: .3em; }
 .bi.stack { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.25; }
 .bi.stack .bi-ja { margin-inline-start: 0; }

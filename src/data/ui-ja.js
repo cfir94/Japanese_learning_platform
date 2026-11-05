@@ -3,6 +3,13 @@
 // Keep the Japanese short and natural — these are labels, not sentences.
 
 export const UI = {
+  topicImagePrompt: ['מה המילה ביפנית?', '日本語で何と言う？'],
+  topicPictureCard: ['תמונה לזיהוי', '写真のカード'],
+  topicWordCard: ['מילה לזכירה', '言葉のカード'],
+  topicMixedMode: ['מילים ותמונות', '言葉と写真'],
+  topicTextMode: ['מילים בלבד', '言葉だけ'],
+  topicAnswer: ['התשובה', '答え'],
+  topicFlipBack: ['לחיצה לחזרה לצד הראשון', '押して戻る'],
   guideParagraph: ['פסקת הדרכה', 'ガイドの説明'],
   topicFlashcards: ['משחק כרטיסיות', '単語カード'],
   guideJapanese: ['יפנית', '日本語'],
