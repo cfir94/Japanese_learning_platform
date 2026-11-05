@@ -46,6 +46,7 @@ export const ENGLISH_CATEGORIES = { places: ['Places','場所'], food: ['Food','
 ENGLISH_JOURNEY['jewish-arab-relations'] = ['Jewish–Arab relations', [], 'What would you like to ask about this topic?'];
 ENGLISH_JOURNEY['speaking-patterns'] = ['Conversation and explanation', [], 'Could you say that again slowly?'];
 const EXTRA_GLOSS = {
+  '早く':'soon; quickly, depending on context', '元気になる':'get better, become well', 'といいね':'I hope…; a shared wish, depending on context', 'といいな':'I hope…; a personal wish',
   '教会':'church', '嘆き':'lamentation, grief', '嘆く':'lament, grieve', '泣く':'cry', '壁':'wall',
   '宗教':'religion', '興味':'interest', '興味がある':'be interested', '興味がない':'not be interested', 'とても':'very', 'めっちゃ':'really, very (casual)',
   '揚げなす':'fried eggplant', '焼きなす':'grilled eggplant', '焼く':'grill, bake', '二人':'two people', '食べてほしい':'want someone to eat', '入ってる':'be inside, contain (casual)',
