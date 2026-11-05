@@ -8,6 +8,7 @@ import { GRAMMAR, LESSONS } from '../src/data/grammar.js';
 import { ITEMS, PARTS, WRITING, SPEAKING } from '../src/data/placement.js';
 import { WEEKS, MILESTONES, AFTER_MARCH } from '../src/data/plan.js';
 import { ENTRIES, CATEGORIES } from '../src/data/journey.js';
+import { GUIDE, PRACTICE_NOTES } from '../src/data/guide.js';
 import { UI_JA } from '../src/data/ui-ja.js';
 import { ENGLISH_UNITS, ENGLISH_PARTS, ENGLISH_LABELS, ENGLISH_CHECKIN } from '../src/data/english.js';
 import { TEACH, FOCUS, FOCUS_WORDS, KANJI_INFO, filled } from '../src/data/lessons.js';
@@ -53,6 +54,12 @@ for (const e of ENTRIES) {
   for (const s of [...e.sentences, e.ask]) { add(s[0]); say(s[0]); known[s[0]] = s[1]; addRuns(s[2]); }
 }
 Object.values(UI_JA).forEach(add);
+for (const lines of Object.values(GUIDE)) {
+  for (const [ja, he] of lines) { add(ja); say(ja); addRuns(he); }
+}
+for (const notes of Object.values(PRACTICE_NOTES)) {
+  for (const [ja, he] of notes) { add(ja); addRuns(he); }
+}
 // The daily lesson: explanations, examples, exercises (with the filled-in sentence), focus drills,
 // the study kanji's example words, and the day's writing and speaking prompts.
 const exercise = (x) => {
@@ -90,4 +97,5 @@ ENGLISH_CHECKIN.forEach((prompt) => add(prompt[1]));
 ['正美お母さん', '日本語', '日本語で', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
 
 process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known, speech: [...speech].sort() }));
+
 

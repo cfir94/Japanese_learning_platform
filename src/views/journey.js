@@ -9,6 +9,7 @@ import { CATEGORIES, ENTRY, wordId } from '../data/journey.js';
 import { entriesWithPhotos } from '../data/places.js';
 import { POINT } from '../data/grammar.js';
 import { vocabState } from '../logic/progress.js';
+import { mountGuide } from '../lib/guide-practice.js';
 
 export const live = true;
 
@@ -88,6 +89,8 @@ function renderEntry(root, raw, ctx) {
       ${credit(entry.image)}
       <p class="entry-intro">${rich(entry.intro)}</p>
 
+      <section class="card guide-practice" id="guide-practice" aria-label="פסקת הדרכה וכרטיסיות"></section>
+
       <section class="card">
         <h2><span class="ico">🗂️</span> ${bi('words')}</h2>
         <div class="words">
@@ -122,6 +125,7 @@ function renderEntry(root, raw, ctx) {
     </nav>
   </div>`;
 
+  mountGuide(root.querySelector('#guide-practice'), entry, ctx);
   root.querySelectorAll('[data-say]').forEach((b) => b.addEventListener('click', () => speak(b.dataset.say)));
   root.querySelectorAll('[data-word]').forEach((b) => b.addEventListener('click', () => {
     store.add('vocab', { id: b.dataset.word, known: b.dataset.known !== '1' });
@@ -135,4 +139,5 @@ function renderEntry(root, raw, ctx) {
     document.documentElement.classList.toggle('no-furi', !e.target.checked);
   });
 }
+
 

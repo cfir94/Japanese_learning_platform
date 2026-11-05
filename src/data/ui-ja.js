@@ -3,6 +3,24 @@
 // Keep the Japanese short and natural — these are labels, not sentences.
 
 export const UI = {
+  guideParagraph: ['פסקת הדרכה', 'ガイドの説明'],
+  topicFlashcards: ['משחק כרטיסיות', '単語カード'],
+  guideJapanese: ['יפנית', '日本語'],
+  guideHebrew: ['עברית', 'ヘブライ語'],
+  guideBySentence: ['משפט בכל פעם', '一文ずつ'],
+  guideListen: ['השמעה לפי משפט', '一文ずつ聞く'],
+  guideNotes: ['ביטויים ודקדוק לתרגול', '表現と文法'],
+  guideSources: ['מקורות לרקע', '参考資料'],
+  topicRoundDone: ['הסבב הסתיים', 'ひとまわり終わった'],
+  topicKeepPracticing: ['עברת על המילים. מילים שסימנת ״שוב״ מחכות לתרגול נוסף.', 'もう一度練習したい言葉もあるね。'],
+  topicNiceRound: ['כל מילה שקראת בקול היא עוד תרגול. נחזור עליהן גם בהמשך.', '声に出して、また練習しよう。'],
+  topicReplay: ['סבב חדש בערבוב', 'シャッフルしてもう一度'],
+  topicReviewed: ['מילים שתרגלת בסבב', '練習した単語'],
+  topicHeJa: ['מעברית ליפנית', 'ヘブライ語から日本語'],
+  topicJaHe: ['מיפנית לעברית', '日本語からヘブライ語'],
+  topicPhotoHint: ['תמונת הנושא — אינה בהכרח תמונה של המילה בכרטיס', '写真はこのテーマのイメージです。'],
+  topicFlip: ['לחיצה לחשיפת התשובה', '押して答えを見る'],
+  topicSelfCheck: ['דיווח עצמי לתרגול', '自分で振り返る'],
   // navigation
   navToday: ['היום', '今日'],
   navPlan: ['התוכנית', '計画'],
@@ -226,4 +244,5 @@ export const UI = {
 };
 
 export const UI_JA = Object.fromEntries(Object.entries(UI).map(([k, [, ja]]) => [k, ja]));
+
 

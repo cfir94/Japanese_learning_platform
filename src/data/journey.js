@@ -9,6 +9,8 @@
 // for recognition). Register: casual between friends; polite where you'd address a stranger or a host.
 // Facts in `intro` are kept to what is safe to say; anything seasonal says so.
 
+import { extendJourney } from './guide-vocabulary.js';
+
 export const CATEGORIES = [
   { id: 'places', he: 'מקומות', ja: '場所', icon: '📍' },
   { id: 'food', he: 'אוכל', ja: '食べ物', icon: '🍽️' },
@@ -920,6 +922,8 @@ export const ENTRIES = [
   },
 ];
 
+extendJourney(ENTRIES);
+
 export const ENTRY = Object.fromEntries(ENTRIES.map((e) => [e.id, e]));
 
 export function wordId(entry, word) {
@@ -933,4 +937,5 @@ export function sentencesFor(pointIds) {
     .filter((s) => s[3]?.some((g) => wanted.has(g)))
     .map((s) => ({ entry, ja: s[0], kana: s[1], he: s[2], g: s[3] })));
 }
+
 

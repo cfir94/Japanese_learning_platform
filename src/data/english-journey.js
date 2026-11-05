@@ -1,4 +1,5 @@
 // English/Japanese versions of the shared journey vocabulary, in the original word order.
+import { ENTRIES } from './journey.js';
 export const ENGLISH_JOURNEY = {
   'jerusalem': ['Jerusalem', ['old city','city wall','holy place','religion','Western Wall','Dome of the Rock','Church of the Holy Sepulchre','market'], 'What would you like to see in Jerusalem?'],
   'dead-sea': ['The Dead Sea', ['salt','float','mud','below sea level','sunscreen','sting','low','salty','sink','does not sink'], 'Would you like to try floating?'],
@@ -41,3 +42,24 @@ export const ENGLISH_JOURNEY = {
 };
 
 export const ENGLISH_CATEGORIES = { places: ['Places','場所'], food: ['Food','食べ物'], activities: ['Activities','体験'], topics: ['Conversations','話題'] };
+
+ENGLISH_JOURNEY['jewish-arab-relations'] = ['Jewish–Arab relations', [], 'What would you like to ask about this topic?'];
+ENGLISH_JOURNEY['speaking-patterns'] = ['Conversation and explanation', [], 'Could you say that again slowly?'];
+const EXTRA_GLOSS = {
+  '教会':'church', '嘆き':'lamentation, grief', '嘆く':'lament, grieve', '泣く':'cry', '壁':'wall',
+  '宗教':'religion', '興味':'interest', '興味がある':'be interested', '興味がない':'not be interested', 'とても':'very', 'めっちゃ':'really, very (casual)',
+  '揚げなす':'fried eggplant', '焼きなす':'grilled eggplant', '焼く':'grill, bake', '二人':'two people', '食べてほしい':'want someone to eat', '入ってる':'be inside, contain (casual)',
+  '味見する':'taste, check the flavour', '味見してほしい':'want someone to taste', '試食する':'try a food sample', '食べてみる':'try eating, try a food', '特に':'especially', '例えば':'for example', 'いろいろな':'various',
+  'つなげる':'connect', 'つなげて':'connect (te-form)', '説明する':'explain', 'ゆっくり':'slowly, at ease', 'もう一回':'one more time', '一般的に':'in general',
+  'ユダヤ人':'Jewish person, Jews', 'アラブ人':'Arab person, Arabs', '関係':'relationship', '状況':'situation', '土地':'land', '政治':'politics', '問題':'issue, problem', '複雑':'complicated', '微妙な':'delicate, tricky; ambiguous in some contexts', 'デリケートな':'sensitive, delicate', '考え方':'way of thinking', '一人一人':'each individual', '大切な場所':'important place',
+  'について':'about', 'にとって':'for, from the standpoint of', '特別な':'special', '有名な':'famous', '大切な':'important', '考える':'think', 'ちょっと待って':'wait a moment', '完璧':'perfect', '続ける':'continue', '予約する':'book, reserve', '予約した':'booked, reserved', '二泊する':'stay two nights', '文':'sentence',
+};
+for (const entry of ENTRIES) {
+  const words = ENGLISH_JOURNEY[entry.id][1];
+  for (let i = words.length; i < entry.words.length; i++) {
+    const ja = entry.words[i][0];
+    if (!EXTRA_GLOSS[ja]) throw new Error(`Missing English gloss: ${ja}`);
+    words.push(EXTRA_GLOSS[ja]);
+  }
+}
+

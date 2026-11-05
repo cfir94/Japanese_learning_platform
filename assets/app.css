@@ -416,6 +416,35 @@ a.postcard:hover img { transform: scale(1.03); }
 ruby { ruby-position: over; }
 rt { font-size: .5em; font-weight: 400; color: var(--sea); letter-spacing: 0; opacity: .9; user-select: none; }
 .no-furi rt { display: none; }
+
+/* Guide practice belongs to each journey topic, using the site's paper/sakura palette. */
+.study-tabs { margin: 0 0 16px; flex-wrap: wrap; overflow: visible; }
+.study-tabs button { font: inherit; cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; background: var(--card); color: var(--ink); }
+.study-tabs button[aria-selected="true"], .study-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.study-tabs button:focus-visible, .topic-flashcard:focus-visible { outline: 3px solid #bd6e8b; outline-offset: 4px; }
+.guide-toolbar { gap: 14px; flex-wrap: wrap; }
+.guide-toolbar .tabs { margin: 0; }
+.guide-paragraph { font-size: 20px; line-height: 2.4; padding: 20px 0 26px; overflow-wrap: anywhere; }
+.guide-paragraph[lang="ja"] { font-family: var(--jp); }
+.guide-practice details { padding: 12px 0; border-top: 1px solid var(--line); }
+.guide-practice summary { cursor: pointer; }
+.guide-listen li { padding: 12px 0; line-height: 2.2; }
+.guide-notes dt { margin-top: 14px; font-size: 19px; }
+.guide-notes dd { margin: 6px 0 16px; line-height: 1.9; }
+.topic-card-photo { width: 100%; max-height: 150px; object-fit: cover; border-radius: 15px; display: block; }
+.topic-photo-note { margin: 5px 0 14px; }
+.topic-flashcard { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; width: 100%; min-height: 230px; padding: 32px 20px; border: 1px solid #dfc3ce; border-radius: 22px; background: linear-gradient(145deg,#fffaf4,#f9e9ed); color: var(--ink); cursor: pointer; font: inherit; box-shadow: 0 8px 24px #8749650b; overflow-wrap: anywhere; }
+.topic-flashcard.revealed { background: linear-gradient(145deg,#fffaf4,#e8f3f0); border-color: #b4d0c4; }
+.topic-card-front { display: block; font-size: clamp(25px,5vw,38px); line-height: 2; }
+.topic-card-front[lang="ja"], .topic-card-back[lang="ja"] { font-family: var(--jp); }
+.topic-card-back { display: block; font-size: 22px; line-height: 1.8; }
+.topic-flashcard rt { font-size: .45em; }
+.topic-ratings { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 18px; }
+.topic-ratings .btn { white-space: normal; justify-content: center; }
+.topic-example { font: 19px/2.2 var(--jp); }
+.topic-round-end { padding: 30px 10px; min-height: 250px; }
+@media (max-width:480px) { .guide-paragraph { font-size: 18px; line-height: 2.5; } .topic-ratings { grid-template-columns: 1fr; } .study-tabs button { padding: 8px 12px; } }
+@media (prefers-reduced-motion:reduce) { .topic-flashcard { transition: none; } }
 .bi-ja { direction: ltr; unicode-bidi: isolate; font-family: var(--jp); color: var(--muted); font-size: .86em; font-weight: 500; margin-inline-start: .3em; }
 .bi.stack { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.25; }
 .bi.stack .bi-ja { margin-inline-start: 0; }
@@ -539,3 +568,4 @@ html[lang="en"] textarea.answer { text-align: left; }
 .toast { position: fixed; z-index: 50; inset-inline: 16px; bottom: max(16px, env(safe-area-inset-bottom)); max-width: 520px; margin-inline: auto; padding: 14px 16px 14px 40px; border-radius: 16px; background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 14px; line-height: 1.6; }
 .toast p { margin: 6px 0 0; }
 .toast-close { position: absolute; top: 8px; left: 10px; border: 0; background: transparent; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px; }
+
