@@ -9,6 +9,7 @@
 // for recognition). Register: casual between friends; polite where you'd address a stranger or a host.
 // Facts in `intro` are kept to what is safe to say; anything seasonal says so.
 
+import { COMMUNITIES } from './communities.js';
 import { LANDSCAPES } from './landscapes.js';
 
 import { extendJourney } from './guide-vocabulary.js';
@@ -18,6 +19,7 @@ export const CATEGORIES = [
   { id: 'food', he: 'אוכל', ja: '食べ物', icon: '🍽️' },
   { id: 'activities', he: 'פעילויות', ja: 'アクティビティ', icon: '🤿' },
   { id: 'landscapes', he: 'גאולוגיה ונוף', ja: '地形と地質', icon: '🏜️' },
+  { id: 'communities', he: 'חברה וקהילות', ja: '社会とコミュニティ', icon: '🤝' },
   { id: 'topics', he: 'שיחות', ja: '話題', icon: '💬' },
 ];
 
@@ -925,7 +927,7 @@ export const ENTRIES = [
   },
 ];
 
-ENTRIES.push(...LANDSCAPES);
+ENTRIES.push(...LANDSCAPES, ...COMMUNITIES);
 
 extendJourney(ENTRIES);
 

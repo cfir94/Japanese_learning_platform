@@ -1,3 +1,4 @@
+import { COMMUNITIES } from './communities.js';
 import { LANDSCAPES } from './landscapes.js';
 
 // Short, casual guide scripts. These are reusable models, not private lesson records.
@@ -289,8 +290,9 @@ export const PRACTICE_NOTES = {
   ],
 };
 
-// Share the checked landscape explanations with the existing paragraph and flashcard tools.
-for (const entry of LANDSCAPES) {
+// Share the checked topic explanations with the existing paragraph and flashcard tools.
+for (const entry of [...LANDSCAPES, ...COMMUNITIES]) {
   GUIDE[entry.id] = entry.sentences.map(([ja, , he]) => [ja, he]);
   GUIDE_SOURCES[entry.id] = entry.sources;
+  if (entry.notes) PRACTICE_NOTES[entry.id] = entry.notes;
 }
