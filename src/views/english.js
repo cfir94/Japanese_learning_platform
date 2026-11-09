@@ -156,6 +156,9 @@ function renderJourney(root, param, ctx) {
   const [name, words, question] = ENGLISH_JOURNEY[raw.id];
   const progress = stats(ctx);
   root.innerHTML = `<div class="stack"><a class="btn quiet" href="#/journey">← ${label('journey')}</a><article class="entry"><div class="entry-hero">${img(entry.image ? { ...entry.image, alt: name } : null, '', entry)}<div class="label"><b>${esc(name)}</b><span lang="ja">${jp(raw.ja)}</span></div></div>${credit(entry.image)}
+    ${raw.english ? `<p class="entry-intro" lang="en">${esc(raw.english.intro)}</p>
+    <section class="card"><h2>${label('examples')}</h2><ul class="sentences">${raw.sentences.map((s, i) => `<li class="sentence"><p class="expr" lang="en">${esc(raw.english.sentences[i])} <button class="say" data-en-say="${esc(raw.english.sentences[i])}" aria-label="Listen">🔊</button></p><p lang="ja" dir="ltr">${jp(s[0])}</p></li>`).join('')}</ul>
+    <details><summary>${dual('Sources', '参考資料')}</summary><ul>${raw.sources.map(([name, url]) => `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(name)}</a></li>`).join('')}</ul></details></section>` : ''}
     <section class="card"><h2>${label('words')}</h2><div class="words">${raw.words.map((word, index) => wordTile(`journey:${raw.id}:${words[index]}`, words[index], word[0], progress, ctx)).join('')}</div></section>
     <section class="card"><h2>${label('questions')}</h2><p class="expr" lang="en">${esc(question)} <button class="say" data-en-say="${esc(question)}" aria-label="Listen">🔊</button></p><p lang="ja">${jp('英語で質問してみよう。')}</p></section></article></div>`;
   bindWords(root, ctx);

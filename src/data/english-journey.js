@@ -41,7 +41,7 @@ export const ENGLISH_JOURNEY = {
   'culture': ['Cultural differences', ['culture','difference','be different','custom','say it directly','hold back (to be polite)','speak loudly','strict about time','wait in line','be surprised','get used to','read the room'], 'What feels most different here?'],
 };
 
-export const ENGLISH_CATEGORIES = { places: ['Places','場所'], food: ['Food','食べ物'], activities: ['Activities','体験'], topics: ['Conversations','話題'] };
+export const ENGLISH_CATEGORIES = { places: ['Places','場所'], food: ['Food','食べ物'], activities: ['Activities','体験'], landscapes: ['Landscapes and geology','地形と地質'], topics: ['Conversations','話題'] };
 
 ENGLISH_JOURNEY['jewish-arab-relations'] = ['Jewish–Arab relations', [], 'What would you like to ask about this topic?'];
 ENGLISH_JOURNEY['speaking-patterns'] = ['Conversation and explanation', [], 'Could you say that again slowly?'];
@@ -56,6 +56,7 @@ const EXTRA_GLOSS = {
   'について':'about', 'にとって':'for, from the standpoint of', '特別な':'special', '有名な':'famous', '大切な':'important', '考える':'think', 'ちょっと待って':'wait a moment', '完璧':'perfect', '続ける':'continue', '予約する':'book, reserve', '予約した':'booked, reserved', '二泊する':'stay two nights', '文':'sentence',
 };
 for (const entry of ENTRIES) {
+  if (entry.english) ENGLISH_JOURNEY[entry.id] = [entry.english.title, [...entry.english.words], entry.english.ask];
   const words = ENGLISH_JOURNEY[entry.id][1];
   for (let i = words.length; i < entry.words.length; i++) {
     const ja = entry.words[i][0];

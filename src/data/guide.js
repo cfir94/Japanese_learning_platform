@@ -1,3 +1,5 @@
+import { LANDSCAPES } from './landscapes.js';
+
 // Short, casual guide scripts. These are reusable models, not private lesson records.
 // [Japanese, Hebrew]; rendered as one paragraph or one sentence at a time.
 export const GUIDE = {
@@ -286,3 +288,9 @@ export const PRACTICE_NOTES = {
     ['つなげて', 'צורת て של つなげる, לחבר. בהוראה: 文をつなげて = חבר את המשפטים.'],
   ],
 };
+
+// Share the checked landscape explanations with the existing paragraph and flashcard tools.
+for (const entry of LANDSCAPES) {
+  GUIDE[entry.id] = entry.sentences.map(([ja, , he]) => [ja, he]);
+  GUIDE_SOURCES[entry.id] = entry.sources;
+}

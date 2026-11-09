@@ -9,12 +9,15 @@
 // for recognition). Register: casual between friends; polite where you'd address a stranger or a host.
 // Facts in `intro` are kept to what is safe to say; anything seasonal says so.
 
+import { LANDSCAPES } from './landscapes.js';
+
 import { extendJourney } from './guide-vocabulary.js';
 
 export const CATEGORIES = [
   { id: 'places', he: 'מקומות', ja: '場所', icon: '📍' },
   { id: 'food', he: 'אוכל', ja: '食べ物', icon: '🍽️' },
   { id: 'activities', he: 'פעילויות', ja: 'アクティビティ', icon: '🤿' },
+  { id: 'landscapes', he: 'גאולוגיה ונוף', ja: '地形と地質', icon: '🏜️' },
   { id: 'topics', he: 'שיחות', ja: '話題', icon: '💬' },
 ];
 
@@ -921,6 +924,8 @@ export const ENTRIES = [
     ask: ['イスラエルに来て、何がいちばん違うと思った？', 'いすらえるにきて、なにがいちばんちがうとおもった？', 'מה הכי שונה בעינייך מאז שהגעת לישראל?', ['g10-2', 'g08-3']],
   },
 ];
+
+ENTRIES.push(...LANDSCAPES);
 
 extendJourney(ENTRIES);
 

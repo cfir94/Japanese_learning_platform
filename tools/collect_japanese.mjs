@@ -94,7 +94,7 @@ Object.values(ENGLISH_LABELS).forEach((label) => add(label[1]));
 ENGLISH_PARTS.forEach((part) => add(part.ja));
 for (const unit of ENGLISH_UNITS) (unit.drills ?? []).forEach((drill) => add(drill[2]));
 ENGLISH_CHECKIN.forEach((prompt) => add(prompt[1]));
-['正美お母さん', '日本語', '日本語で', '英語で質問してみよう。', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
+['正美お母さん', '日本語', '日本語で', '英語で質問してみよう。', '参考資料', '名前とメールアドレスで、自分の学習記録を保存できます。', 'ログインできません。メールアドレスと接続を確認してください。'].forEach(add);
 
 process.stdout.write(JSON.stringify({ texts: [...texts].sort(), known, speech: [...speech].sort() }));
 
